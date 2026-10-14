@@ -1,0 +1,211 @@
+
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101827">
+  <title>Football Predictor AI</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #101827;
+      color: #f4f7fb;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    main { max-width: 650px; margin: auto; }
+    h1 { font-size: 27px; margin-bottom: 6px; }
+    .muted { color: #aab7ca; font-size: 14px; }
+    .card {
+      background: #1b283a;
+      border: 1px solid #34445b;
+      border-radius: 16px;
+      padding: 17px;
+      margin: 16px 0;
+    }
+    label { display: block; margin: 14px 0 6px; }
+    input, button {
+      width: 100%;
+      border-radius: 10px;
+      padding: 13px;
+      font-size: 16px;
+    }
+    input {
+      background: #101827;
+      border: 1px solid #50627b;
+      color: white;
+    }
+    button {
+      background: #55df9b;
+      color: #10251c;
+      font-weight: 700;
+      border: 0;
+      margin-top: 16px;
+    }
+    .probabilities {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      text-align: center;
+      margin-top: 18px;
+    }
+    .prob {
+      background: #101827;
+      padding: 13px 4px;
+      border-radius: 10px;
+    }
+    .value { font-size: 23px; font-weight: 800; }
+    .small { font-size: 12px; color: #aab7ca; }
+    .bar {
+      height: 8px;
+      background: #34445b;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+    .fill { height: 100%; background: #55df9b; }
+    #results { display: none; }
+    footer { font-size: 12px; color: #aab7ca; line-height: 1.6; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>⚽ Football Predictor AI</h1>
+  <p class="muted">Analisi statistica delle partite di calcio</p>
+
+  <section class="card">
+    <h2>Analizza una partita</h2>
+    <p class="muted">Prima versione: inserimento manuale dei gol attesi.</p>
+
+    <label for="home">Squadra di casa</label>
+    <input id="home" value="Squadra A" maxlength="60">
+
+    <label for="away">Squadra ospite</label>
+    <input id="away" value="Squadra B" maxlength="60">
+
+    <label for="lh">Gol attesi — squadra di casa</label>
+    <input id="lh" type="number" min="0.1" max="5" step="0.1" value="1.6">
+
+    <label for="la">Gol attesi — squadra ospite</label>
+    <input id="la" type="number" min="0.1" max="5" step="0.1" value="1.1">
+
+    <button id="analyze">Calcola probabilità</button>
+  </section>
+
+  <section class="card" id="results" aria-live="polite">
+    <h2 id="matchTitle"></h2>
+    <p class="muted">Stime teoriche del modello di Poisson</p>
+
+    <div class="probabilities">
+      <div class="prob">
+        <div class="small">Vittoria casa</div>
+        <div class="value" id="p1"></div>
+      </div>
+      <div class="prob">
+        <div class="small">Pareggio</div>
+        <div class="value" id="px"></div>
+      </div>
+      <div class="prob">
+        <div class="small">Vittoria ospite</div>
+        <div class="value" id="p2"></div>
+      </div>
+    </div>
+
+    <h3>Over / Under 2,5 gol</h3>
+    <p id="over"></p>
+    <p id="under"></p>
+
+    <h3>Entrambe le squadre a segno</h3>
+    <p id="btts"></p>
+
+    <h3>Risultati esatti più probabili</h3>
+    <div id="scores"></div>
+  </section>
+
+  <footer>
+    <p>Versione prototipo: i gol attesi sono inseriti manualmente.
+    Non sono ancora collegati a dati reali. Le percentuali non
+    garantiscono risultati o profitti nelle scommesse.</p>
+  </footer>
+</main>
+
+<script>
+  function poisson(lambda, k) {
+    let p = Math.exp(-lambda);
+    for (let i = 1; i <= k; i++) p *= lambda / i;
+    return p;
+  }
+
+  function pct(x) {
+    return (x * 100).toFixed(1) + "%";
+  }
+
+  document.getElementById("analyze").addEventListener("click", () => {
+    const home = document.getElementById("home").value.trim();
+    const away = document.getElementById("away").value.trim();
+    const lh = Number(document.getElementById("lh").value);
+    const la = Number(document.getElementById("la").value);
+
+    if (!home || !away || !Number.isFinite(lh) ||
+        !Number.isFinite(la) || lh < 0.1 || la < 0.1 ||
+        lh > 5 || la > 5) {
+      alert("Inserisci nomi e gol attesi validi, da 0,1 a 5.");
+      return;
+    }
+
+    const maxGoals = 12;
+    const ph = Array.from({length: maxGoals + 1},
+      (_, k) => poisson(lh, k));
+    const pa = Array.from({length: maxGoals + 1},
+      (_, k) => poisson(la, k));
+
+    let p1 = 0, px = 0, p2 = 0, under = 0;
+    let btts = 0;
+    const scores = [];
+
+    for (let h = 0; h <= maxGoals; h++) {
+      for (let a = 0; a <= maxGoals; a++) {
+        const p = ph[h] * pa[a];
+        if (h > a) p1 += p;
+        else if (h === a) px += p;
+        else p2 += p;
+
+        if (h + a <= 2) under += p;
+        if (h > 0 && a > 0) btts += p;
+
+        scores.push({h, a, p});
+      }
+    }
+
+    const total = p1 + px + p2;
+    p1 /= total;
+    px /= total;
+    p2 /= total;
+
+    document.getElementById("matchTitle").textContent =
+      home + " — " + away;
+    document.getElementById("p1").textContent = pct(p1);
+    document.getElementById("px").textContent = pct(px);
+    document.getElementById("p2").textContent = pct(p2);
+    document.getElementById("over").textContent =
+      "Over 2,5: " + pct(1 - under);
+    document.getElementById("under").textContent =
+      "Under 2,5: " + pct(under);
+    document.getElementById("btts").textContent = pct(btts);
+
+    scores.sort((a, b) => b.p - a.p);
+    document.getElementById("scores").replaceChildren(
+      ...scores.slice(0, 5).map(s => {
+        const row = document.createElement("p");
+        row.textContent = s.h + " - " + s.a + ": " + pct(s.p);
+        return row;
+      })
+    );
+
+    document.getElementById("results").style.display = "block";
+  });
+</script>
+</body>
+</html>
