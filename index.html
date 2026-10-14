@@ -207,5 +207,70 @@
     document.getElementById("results").style.display = "block";
   });
 </script>
+
+<section id="calendario-reale" style="padding:16px;margin:20px 0;border:1px solid #888;border-radius:12px">
+  <h2>Partite reali</h2>
+  <p id="stato-calendario">Caricamento del calendario...</p>
+  <div id="lista-partite"></div>
+</section>
+
+<script>
+async function caricaCalendario() {
+  const stato = document.getElementById("stato-calendario");
+  const lista = document.getElementById("lista-partite");
+
+  try {
+    const risposta = await fetch("data/fixtures.json", {
+      cache: "no-store"
+    });
+
+    if (!risposta.ok) {
+      throw new Error("File dati non trovato");
+    }
+
+    const dati = await risposta.json();
+
+    stato.textContent =
+      "Aggiornamento: " + dati.aggiornato +
+      " · Partite trovate: " + dati.numeroPartite;
+
+    if (!dati.partite || dati.partite.length === 0) {
+      lista.textContent =
+        "Nessuna partita disponibile nel calendario ricevuto.";
+      return;
+    }
+
+    lista.replaceChildren();
+
+    dati.partite.forEach(partita => {
+      const riga = document.createElement("div");
+      riga.style.padding = "12px 0";
+      riga.style.borderTop = "1px solid #888";
+
+      const titolo = document.createElement("strong");
+      titolo.textContent =
+        partita.casa + " - " + partita.trasferta;
+
+      const dettaglio = document.createElement("p");
+      dettaglio.textContent =
+        partita.campionato + " · " +
+        new Date(partita.data).toLocaleString("it-IT", {
+          dateStyle: "short",
+          timeStyle: "short"
+        });
+
+      riga.append(titolo, dettaglio);
+      lista.appendChild(riga);
+    });
+  } catch (errore) {
+    stato.textContent =
+      "Non riesco a caricare il calendario. Controlla il file dati.";
+    console.error(errore);
+  }
+}
+
+caricaCalendario();
+</script>
+
 </body>
 </html>
