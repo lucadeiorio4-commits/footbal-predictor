@@ -1,14 +1,119 @@
-{
-  "aggiornato": "2026-10-15",
-  "numeroPartite": 0,
-  "partite": [],
-  "avvisi": [
-    "Premier League: {'plan': 'Free plans do not have access to this season, try from 2022 to 2024.'}",
-    "La Liga: {'plan': 'Free plans do not have access to this season, try from 2022 to 2024.'}",
-    "Serie A: {'plan': 'Free plans do not have access to this season, try from 2022 to 2024.'}",
-    "Bundesliga: {'plan': 'Free plans do not have access to this season, try from 2022 to 2024.'}",
-    "Ligue 1: {'plan': 'Free plans do not have access to this season, try from 2022 to 2024.'}",
-    "Champions League: {'plan': 'Free plans do not have access to this season, try from 2022 to 2024.'}",
-    "Europa League: {'plan': 'Free plans do not have access to this season, try from 2022 to 2024.'}"
-  ]
-}
+
+name: Aggiorna dati calcistici
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 */6 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  aggiorna:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Scarica repository
+        uses: actions/checkout@v4
+
+      - name: Scarica e converti dati OpenFootball
+        run: |
+          python - <<'PY'
+          import json
+          import urllib.request
+          from pathlib import Path
+
+          url = (
+              "https://raw.githubusercontent.com/"
+              "openfootball/football.json/master/"
+              "2026-27/it.1.json"
+          )
+
+          req = urllib.request.Request(
+              url,
+              headers={"User-Agent": "Football-Predictor-AI"}
+          )
+
+          with urllib.request.urlopen(req, timeout=30) as response:
+              source = json.load(response)
+
+          matches = source.get("matches", [])
+
+          if not matches:
+              raise RuntimeError(
+                  "OpenFootball non ha restituito partite. "
+                  "Il file esistente non verrà sovrascritto."
+              )
+
+          fixtures = []
+
+          for match in matches:
+              score = match.get("score") or {}
+              ft = score.get("ft")
+
+              fixtures.append({
+                  "campionato": source.get("name", "Italian Serie A"),
+                  "giornata": match.get("round", ""),
+                  "data": match.get("date", ""),
+                  "ora": match.get("time", ""),
+                  "casa": match.get("team1", ""),
+                  "ospite": match.get("team2", ""),
+                  "risultatoCasa": (
+                      ft[0] if isinstance(ft, list)
+                      and len(ft) == 2 else None
+                  ),
+                  "risultatoOspite": (
+                      ft[1] if isinstance(ft, list)
+                      and len(ft) == 2 else None
+                  )
+              })
+
+          output = {
+              "fonte": "OpenFootball",
+              "campionato": source.get("name", "Italian Serie A"),
+              "ultimoAggiornamento": __import__("datetime").datetime.now(
+                  __import__("datetime").timezone.utc
+              ).isoformat(),
+              "numeroPartite": len(fixtures),
+              "partite": fixtures
+          }
+
+          Path("data").mkdir(exist_ok=True)
+          Path("data/fixtures.json").write_text(
+              json.dumps(output, ensure_ascii=False, indent=2),
+              encoding="utf-8"
+          )
+
+          print("Campionato:", output["campionato"])
+          print("Partite elaborate:", len(fixtures))
+          PY
+
+      - name: Verifica dati generati
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("data/fixtures.json")
+          data = json.loads(path.read_text(encoding="utf-8"))
+
+          assert isinstance(data.get("partite"), list)
+          assert data["numeroPartite"] == len(data["partite"])
+          assert data["numeroPartite"] > 0
+
+          print("Verifica completata:", data["numeroPartite"], "partite")
+          PY
+
+      - name: Salva dati nel repository
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email \
+            "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/fixtures.json
+          if git diff --cached --quiet; then
+            echo "Nessuna modifica ai dati."
+          else
+            git commit -m "Aggiorna dati calcistici da OpenFootball"
+            git push
+          fi
