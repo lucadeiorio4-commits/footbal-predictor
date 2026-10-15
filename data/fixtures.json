@@ -251,4 +251,4 @@ jobs:
           else
             git commit -m "Aggiorna calendari calcistici"
             git push
-          fi
+          
