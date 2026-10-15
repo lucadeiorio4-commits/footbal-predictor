@@ -3,274 +3,822 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#101827">
+  <meta name="description" content="Football Predictor AI: calendario calcistico e stime probabilistiche delle partite.">
   <title>Football Predictor AI</title>
+
   <style>
-    * { box-sizing: border-box; }
+    :root {
+      color-scheme: dark;
+      --bg: #101827;
+      --panel: #1b2638;
+      --panel2: #243249;
+      --text: #f4f7fb;
+      --muted: #aab8cc;
+      --accent: #55dfa0;
+      --border: #34445b;
+      --warning: #ffd479;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
-      padding: 20px;
-      background: #101827;
-      color: #f4f7fb;
-      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, Arial, sans-serif;
+      line-height: 1.5;
     }
-    main { max-width: 650px; margin: auto; }
-    h1 { font-size: 27px; margin-bottom: 6px; }
-    .muted { color: #aab7ca; font-size: 14px; }
-    .card {
-      background: #1b283a;
-      border: 1px solid #34445b;
+
+    header {
+      padding: 28px 16px;
+      text-align: center;
+      background: linear-gradient(135deg, #17283b, #183e40);
+      border-bottom: 1px solid var(--border);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: clamp(27px, 6vw, 38px);
+      letter-spacing: -1px;
+    }
+
+    header h1 span {
+      color: var(--accent);
+    }
+
+    header p {
+      margin: 8px 0 0;
+      color: var(--muted);
+    }
+
+    main {
+      width: min(100% - 24px, 1000px);
+      margin: 22px auto 40px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
       border-radius: 16px;
-      padding: 17px;
-      margin: 16px 0;
+      padding: 18px;
+      margin-bottom: 18px;
     }
-    label { display: block; margin: 14px 0 6px; }
-    input, button {
-      width: 100%;
+
+    h2 {
+      font-size: 20px;
+      margin: 0 0 12px;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .status {
+      padding: 12px;
       border-radius: 10px;
-      padding: 13px;
-      font-size: 16px;
+      background: #111e2d;
+      overflow-wrap: anywhere;
     }
-    input {
-      background: #101827;
-      border: 1px solid #50627b;
-      color: white;
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 18px;
     }
+
+    .stat {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 8px;
+      text-align: center;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 24px;
+      color: var(--accent);
+    }
+
+    .stat span {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 5px;
+    }
+
+    input, select, button {
+      width: 100%;
+      min-height: 46px;
+      padding: 11px 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #111e2d;
+      color: var(--text);
+      font: inherit;
+    }
+
     button {
-      background: #55df9b;
-      color: #10251c;
+      background: var(--accent);
+      color: #092319;
       font-weight: 700;
       border: 0;
-      margin-top: 16px;
+      cursor: pointer;
     }
-    .probabilities {
+
+    button:active {
+      opacity: 0.8;
+    }
+
+    .match {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 15px;
+      margin-bottom: 12px;
+    }
+
+    .match-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .league {
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .match-date {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .teams {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+      align-items: center;
       gap: 8px;
-      text-align: center;
-      margin-top: 18px;
+      margin: 14px 0;
     }
-    .prob {
-      background: #101827;
-      padding: 13px 4px;
-      border-radius: 10px;
+
+    .team {
+      font-size: 15px;
+      font-weight: 700;
+      overflow-wrap: anywhere;
     }
-    .value { font-size: 23px; font-weight: 800; }
-    .small { font-size: 12px; color: #aab7ca; }
-    .bar {
-      height: 8px;
-      background: #34445b;
-      border-radius: 8px;
-      overflow: hidden;
+
+    .team:last-child {
+      text-align: right;
+    }
+
+    .score {
+      font-size: 20px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 20px;
+      background: var(--panel2);
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .predictions {
+      border-top: 1px solid var(--border);
+      margin-top: 12px;
+      padding-top: 12px;
+    }
+
+    .prediction-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
       margin-top: 8px;
     }
-    .fill { height: 100%; background: #55df9b; }
-    #results { display: none; }
-    footer { font-size: 12px; color: #aab7ca; line-height: 1.6; }
-  </style>
-</head>
-<body>
-<main>
-  <h1>⚽ Football Predictor AI</h1>
-  <p class="muted">Analisi statistica delle partite di calcio</p>
 
-  <section class="card">
-    <h2>Analizza una partita</h2>
-    <p class="muted">Prima versione: inserimento manuale dei gol attesi.</p>
-
-    <label for="home">Squadra di casa</label>
-    <input id="home" value="Squadra A" maxlength="60">
-
-    <label for="away">Squadra ospite</label>
-    <input id="away" value="Squadra B" maxlength="60">
-
-    <label for="lh">Gol attesi — squadra di casa</label>
-    <input id="lh" type="number" min="0.1" max="5" step="0.1" value="1.6">
-
-    <label for="la">Gol attesi — squadra ospite</label>
-    <input id="la" type="number" min="0.1" max="5" step="0.1" value="1.1">
-
-    <button id="analyze">Calcola probabilità</button>
-  </section>
-
-  <section class="card" id="results" aria-live="polite">
-    <h2 id="matchTitle"></h2>
-    <p class="muted">Stime teoriche del modello di Poisson</p>
-
-    <div class="probabilities">
-      <div class="prob">
-        <div class="small">Vittoria casa</div>
-        <div class="value" id="p1"></div>
-      </div>
-      <div class="prob">
-        <div class="small">Pareggio</div>
-        <div class="value" id="px"></div>
-      </div>
-      <div class="prob">
-        <div class="small">Vittoria ospite</div>
-        <div class="value" id="p2"></div>
-      </div>
-    </div>
-
-    <h3>Over / Under 2,5 gol</h3>
-    <p id="over"></p>
-    <p id="under"></p>
-
-    <h3>Entrambe le squadre a segno</h3>
-    <p id="btts"></p>
-
-    <h3>Risultati esatti più probabili</h3>
-    <div id="scores"></div>
-  </section>
-
-  <footer>
-    <p>Versione prototipo: i gol attesi sono inseriti manualmente.
-    Non sono ancora collegati a dati reali. Le percentuali non
-    garantiscono risultati o profitti nelle scommesse.</p>
-  </footer>
-</main>
-
-<script>
-  function poisson(lambda, k) {
-    let p = Math.exp(-lambda);
-    for (let i = 1; i <= k; i++) p *= lambda / i;
-    return p;
-  }
-
-  function pct(x) {
-    return (x * 100).toFixed(1) + "%";
-  }
-
-  document.getElementById("analyze").addEventListener("click", () => {
-    const home = document.getElementById("home").value.trim();
-    const away = document.getElementById("away").value.trim();
-    const lh = Number(document.getElementById("lh").value);
-    const la = Number(document.getElementById("la").value);
-
-    if (!home || !away || !Number.isFinite(lh) ||
-        !Number.isFinite(la) || lh < 0.1 || la < 0.1 ||
-        lh > 5 || la > 5) {
-      alert("Inserisci nomi e gol attesi validi, da 0,1 a 5.");
-      return;
+    .prediction {
+      text-align: center;
+      background: #111e2d;
+      border-radius: 9px;
+      padding: 10px 4px;
     }
 
-    const maxGoals = 12;
-    const ph = Array.from({length: maxGoals + 1},
-      (_, k) => poisson(lh, k));
-    const pa = Array.from({length: maxGoals + 1},
-      (_, k) => poisson(la, k));
+    .prediction strong {
+      display: block;
+      color: var(--accent);
+      font-size: 17px;
+    }
 
-    let p1 = 0, px = 0, p2 = 0, under = 0;
-    let btts = 0;
-    const scores = [];
+    .prediction span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+    }
 
-    for (let h = 0; h <= maxGoals; h++) {
-      for (let a = 0; a <= maxGoals; a++) {
-        const p = ph[h] * pa[a];
-        if (h > a) p1 += p;
-        else if (h === a) px += p;
-        else p2 += p;
+    .notice {
+      color: var(--warning);
+      font-size: 12px;
+      margin-top: 12px;
+    }
 
-        if (h + a <= 2) under += p;
-        if (h > 0 && a > 0) btts += p;
+    .empty {
+      padding: 20px 8px;
+      text-align: center;
+      color: var(--muted);
+    }
 
-        scores.push({h, a, p});
+    footer {
+      text-align: center;
+      color: var(--muted);
+      padding: 0 18px 30px;
+      font-size: 12px;
+    }
+
+    @media (min-width: 650px) {
+      .controls {
+        grid-template-columns: 2fr 1fr 1fr;
+      }
+
+      .match {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>Football Predictor <span>AI</span></h1>
+    <p>Calendario, statistiche e stime probabilistiche del calcio</p>
+  </header>
+
+  <main>
+    <section class="stats" aria-label="Statistiche del calendario">
+      <div class="stat">
+        <strong id="totalMatches">—</strong>
+        <span>Partite nel calendario</span>
+      </div>
+      <div class="stat">
+        <strong id="playedMatches">—</strong>
+        <span>Partite con risultato</span>
+      </div>
+      <div class="stat">
+        <strong id="futureMatches">—</strong>
+        <span>Partite da giocare</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Stato dei dati</h2>
+      <p id="status" class="status" role="status" aria-live="polite">
+        Caricamento del calendario...
+      </p>
+      <p class="muted">
+        I dati vengono letti dal file data/fixtures.json del repository.
+      </p>
+      <button id="reloadButton" type="button">Aggiorna calendario</button>
+    </section>
+
+    <section class="panel">
+      <h2>Cerca e filtra le partite</h2>
+
+      <div class="controls">
+        <div>
+          <label for="search">Cerca squadra o campionato</label>
+          <input id="search" type="search"
+            placeholder="Es. Inter, Juventus, Serie A">
+        </div>
+
+        <div>
+          <label for="filter">Visualizza</label>
+          <select id="filter">
+            <option value="future">Da giocare</option>
+            <option value="played">Con risultato</option>
+            <option value="all">Tutte le partite</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="sort">Ordina per</label>
+          <select id="sort">
+            <option value="date">Data crescente</option>
+            <option value="dateDesc">Data decrescente</option>
+            <option value="teams">Nome squadre</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Calendario e analisi</h2>
+      <p id="resultCount" class="muted">In attesa dei dati...</p>
+      <div id="matches">
+        <div class="empty">Caricamento delle partite...</div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Football Predictor AI · Le probabilità sono stime statistiche,
+    non garanzie di risultato.
+  </footer>
+
+  <script>
+    "use strict";
+
+    const statusElement = document.getElementById("status");
+    const matchesElement = document.getElementById("matches");
+    const resultCountElement = document.getElementById("resultCount");
+
+    const totalElement = document.getElementById("totalMatches");
+    const playedElement = document.getElementById("playedMatches");
+    const futureElement = document.getElementById("futureMatches");
+
+    const searchElement = document.getElementById("search");
+    const filterElement = document.getElementById("filter");
+    const sortElement = document.getElementById("sort");
+    const reloadButton = document.getElementById("reloadButton");
+
+    let allMatches = [];
+    let dataInfo = {};
+
+    function parseDate(match) {
+      if (!match.data) return null;
+
+      const time = match.ora || "12:00";
+      const date = new Date(match.data + "T" + time);
+
+      return Number.isNaN(date.getTime()) ? null : date;
+    }
+
+    function hasResult(match) {
+      return match.risultatoCasa !== null &&
+        match.risultatoCasa !== undefined &&
+        match.risultatoOspite !== null &&
+        match.risultatoOspite !== undefined &&
+        match.risultatoCasa !== "" &&
+        match.risultatoOspite !== "";
+    }
+
+    function isPlayed(match) {
+      if (!hasResult(match)) return false;
+
+      const date = parseDate(match);
+
+      // Evita di trattare eventuali punteggi segnaposto
+      // come risultati di partite ancora future.
+      return !date || date.getTime() <= Date.now();
+    }
+
+    function formatDate(match) {
+      const date = parseDate(match);
+
+      if (!date) return "Data da definire";
+
+      return date.toLocaleString("it-IT", {
+        dateStyle: "medium",
+        timeStyle: "short"
+      });
+    }
+
+    function safeNumber(value) {
+      const number = Number(value);
+      return Number.isFinite(number) && number >= 0 ? number : null;
+    }
+
+    function poissonProbability(goals, lambda) {
+      if (goals === 0) return Math.exp(-lambda);
+
+      let probability = Math.exp(-lambda);
+
+      for (let i = 1; i <= goals; i++) {
+        probability *= lambda / i;
+      }
+
+      return probability;
+    }
+
+    function calculatePredictions(home, away) {
+      const historical = allMatches.filter(isPlayed);
+
+      if (historical.length < 5) return null;
+
+      const homeName = home.casa;
+      const awayName = away.ospite || away.trasferta;
+
+      if (!homeName || !awayName) return null;
+
+      let totalGoals = 0;
+      let totalTeams = 0;
+      let homeGoals = 0;
+      let homeGames = 0;
+
+      const stats = {};
+
+      function getTeam(name) {
+        if (!stats[name]) {
+          stats[name] = {
+            scored: 0,
+            conceded: 0,
+            games: 0,
+            homeScored: 0,
+            homeConceded: 0,
+            homeGames: 0,
+            awayScored: 0,
+            awayConceded: 0,
+            awayGames: 0
+          };
+        }
+
+        return stats[name];
+      }
+
+      historical.forEach(match => {
+        const h = safeNumber(match.risultatoCasa);
+        const a = safeNumber(match.risultatoOspite);
+        const hName = match.casa;
+        const aName = match.ospite || match.trasferta;
+
+        if (h === null || a === null || !hName || !aName) return;
+
+        totalGoals += h + a;
+        totalTeams += 2;
+        homeGoals += h;
+        homeGames++;
+
+        const hs = getTeam(hName);
+        const as = getTeam(aName);
+
+        hs.scored += h;
+        hs.conceded += a;
+        hs.games++;
+        hs.homeScored += h;
+        hs.homeConceded += a;
+        hs.homeGames++;
+
+        as.scored += a;
+        as.conceded += h;
+        as.games++;
+        as.awayScored += a;
+        as.awayConceded += h;
+        as.awayGames++;
+      });
+
+      const homeStats = stats[homeName];
+      const awayStats = stats[awayName];
+
+      if (!homeStats || !awayStats ||
+          homeStats.games < 2 || awayStats.games < 2 ||
+          totalTeams === 0 || homeGames === 0) {
+        return null;
+      }
+
+      const averageGoalsPerTeam = totalGoals / totalTeams;
+      const averageHomeGoals = homeGoals / homeGames;
+
+      if (averageGoalsPerTeam <= 0) return null;
+
+      const homeAttack = homeStats.homeGames
+        ? homeStats.homeScored / homeStats.homeGames
+        : homeStats.scored / homeStats.games;
+
+      const awayDefence = awayStats.awayGames
+        ? awayStats.awayConceded / awayStats.awayGames
+        : awayStats.conceded / awayStats.games;
+
+      const awayAttack = awayStats.awayGames
+        ? awayStats.awayScored / awayStats.awayGames
+        : awayStats.scored / awayStats.games;
+
+      const homeDefence = homeStats.homeGames
+        ? homeStats.homeConceded / homeStats.homeGames
+        : homeStats.conceded / homeStats.games;
+
+      const lambdaHome = Math.max(
+        0.15,
+        Math.min(4.5,
+          (homeAttack * awayDefence / averageGoalsPerTeam) *
+          (averageHomeGoals / averageGoalsPerTeam) *
+          1.08
+        )
+      );
+
+      const lambdaAway = Math.max(
+        0.15,
+        Math.min(4.5,
+          (awayAttack * homeDefence / averageGoalsPerTeam) *
+          ((totalGoals / totalTeams) / averageGoalsPerTeam)
+        )
+      );
+
+      let homeWin = 0;
+      let draw = 0;
+      let awayWin = 0;
+      let over25 = 0;
+      let bothScore = 0;
+
+      const maxGoals = 10;
+
+      for (let h = 0; h <= maxGoals; h++) {
+        for (let a = 0; a <= maxGoals; a++) {
+          const probability =
+            poissonProbability(h, lambdaHome) *
+            poissonProbability(a, lambdaAway);
+
+          if (h > a) homeWin += probability;
+          else if (h === a) draw += probability;
+          else awayWin += probability;
+
+          if (h + a >= 3) over25 += probability;
+          if (h > 0 && a > 0) bothScore += probability;
+        }
+      }
+
+      return {
+        homeWin: homeWin * 100,
+        draw: draw * 100,
+        awayWin: awayWin * 100,
+        over25: over25 * 100,
+        under25: (1 - over25) * 100,
+        bothScore: bothScore * 100,
+        noBothScore: (1 - bothScore) * 100,
+        lambdaHome,
+        lambdaAway,
+        sample: historical.length
+      };
+    }
+
+    function createPredictionCard(label, value) {
+      const card = document.createElement("div");
+      card.className = "prediction";
+
+      const strong = document.createElement("strong");
+      strong.textContent = value.toFixed(1) + "%";
+
+      const caption = document.createElement("span");
+      caption.textContent = label;
+
+      card.append(strong, caption);
+      return card;
+    }
+
+    function renderMatch(match) {
+      const card = document.createElement("article");
+      card.className = "match";
+
+      const top = document.createElement("div");
+      top.className = "match-top";
+
+      const league = document.createElement("span");
+      league.className = "league";
+      league.textContent =
+        match.campionato || dataInfo.campionato || "Campionato";
+
+      const date = document.createElement("span");
+      date.className = "match-date";
+      date.textContent = formatDate(match);
+
+      top.append(league, date);
+
+      const teams = document.createElement("div");
+      teams.className = "teams";
+
+      const home = document.createElement("div");
+      home.className = "team";
+      home.textContent = match.casa || "Squadra casa";
+
+      const score = document.createElement("div");
+      score.className = "score";
+
+      const away = document.createElement("div");
+      away.className = "team";
+      away.textContent = match.ospite || match.trasferta || "Squadra ospite";
+
+      if (isPlayed(match)) {
+        score.textContent =
+          match.risultatoCasa + " - " + match.risultatoOspite;
+      } else {
+        score.textContent = "VS";
+      }
+
+      teams.append(home, score, away);
+
+      const tag = document.createElement("span");
+      tag.className = "tag";
+      tag.textContent = isPlayed(match)
+        ? "Partita conclusa"
+        : "Da giocare";
+
+      card.append(top, teams, tag);
+
+      if (!isPlayed(match)) {
+        const prediction = calculatePredictions(match, match);
+
+        const section = document.createElement("div");
+        section.className = "predictions";
+
+        const title = document.createElement("strong");
+        title.textContent = "Stime probabilistiche";
+
+        section.appendChild(title);
+
+        if (prediction) {
+          const grid = document.createElement("div");
+          grid.className = "prediction-grid";
+
+          grid.append(
+            createPredictionCard("Vittoria casa", prediction.homeWin),
+            createPredictionCard("Pareggio", prediction.draw),
+            createPredictionCard("Vittoria ospite", prediction.awayWin),
+            createPredictionCard("Over 2,5", prediction.over25),
+            createPredictionCard("Under 2,5", prediction.under25),
+            createPredictionCard("Gol/Gol", prediction.bothScore),
+            createPredictionCard("No Gol", prediction.noBothScore)
+          );
+
+          section.appendChild(grid);
+
+          const sample = document.createElement("p");
+          sample.className = "muted";
+          sample.textContent =
+            "Calcolo basato sui risultati disponibili (" +
+            prediction.sample + " partite considerate).";
+
+          section.appendChild(sample);
+        } else {
+          const message = document.createElement("p");
+          message.className = "muted";
+          message.textContent =
+            "Dati storici insufficienti per calcolare una stima affidabile.";
+          section.appendChild(message);
+        }
+
+        const notice = document.createElement("p");
+        notice.className = "notice";
+        notice.textContent =
+          "Stime matematiche sperimentali: non garantiscono il risultato.";
+
+        section.appendChild(notice);
+        card.appendChild(section);
+      }
+
+      return card;
+    }
+
+    function renderMatches() {
+      const query = searchElement.value.trim().toLocaleLowerCase("it-IT");
+      const filter = filterElement.value;
+
+      let filtered = allMatches.filter(match => {
+        const played = isPlayed(match);
+
+        if (filter === "played" && !played) return false;
+        if (filter === "future" && played) return false;
+
+        const text = [
+          match.casa,
+          match.ospite,
+          match.trasferta,
+          match.campionato || dataInfo.campionato
+        ].filter(Boolean).join(" ").toLocaleLowerCase("it-IT");
+
+        return text.includes(query);
+      });
+
+      if (sortElement.value === "date") {
+        filtered.sort((a, b) =>
+          (parseDate(a)?.getTime() ?? Infinity) -
+          (parseDate(b)?.getTime() ?? Infinity)
+        );
+      } else if (sortElement.value === "dateDesc") {
+        filtered.sort((a, b) =>
+          (parseDate(b)?.getTime() ?? -Infinity) -
+          (parseDate(a)?.getTime() ?? -Infinity)
+        );
+      } else {
+        filtered.sort((a, b) =>
+          ((a.casa || "") + (a.ospite || a.trasferta || ""))
+            .localeCompare(
+              (b.casa || "") + (b.ospite || b.trasferta || ""),
+              "it"
+            )
+        );
+      }
+
+      matchesElement.replaceChildren();
+
+      resultCountElement.textContent =
+        filtered.length + " partite visualizzate";
+
+      if (filtered.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent =
+          "Nessuna partita trovata con i filtri selezionati.";
+        matchesElement.appendChild(empty);
+        return;
+      }
+
+      const fragment = document.createDocumentFragment();
+
+      filtered.forEach(match => {
+        fragment.appendChild(renderMatch(match));
+      });
+
+      matchesElement.appendChild(fragment);
+    }
+
+    async function loadCalendar() {
+      statusElement.textContent = "Caricamento del calendario...";
+      reloadButton.disabled = true;
+      reloadButton.textContent = "Caricamento...";
+
+      try {
+        const response = await fetch("data/fixtures.json", {
+          cache: "no-store"
+        });
+
+        if (!response.ok) {
+          throw new Error("Errore HTTP " + response.status);
+        }
+
+        const data = await response.json();
+
+        if (!Array.isArray(data.partite)) {
+          throw new Error("Il file JSON non contiene un elenco partite valido.");
+        }
+
+        dataInfo = data;
+        allMatches = data.partite;
+
+        const played = allMatches.filter(isPlayed).length;
+        const future = allMatches.length - played;
+
+        totalElement.textContent = allMatches.length;
+        playedElement.textContent = played;
+        futureElement.textContent = future;
+
+        statusElement.textContent =
+          "Dati caricati correttamente · " +
+          (data.campionato || "Campionato non specificato") +
+          " · Ultimo aggiornamento: " +
+          (data.ultimoAggiornamento || "non indicato");
+
+        renderMatches();
+      } catch (error) {
+        console.error("Errore nel caricamento del calendario:", error);
+
+        statusElement.textContent =
+          "Errore nel caricamento di data/fixtures.json. " +
+          "Verifica che il file esista e che il sito sia pubblicato.";
+
+        matchesElement.replaceChildren();
+
+        const message = document.createElement("div");
+        message.className = "empty";
+        message.textContent =
+          "Non riesco a leggere il calendario. Controlla il percorso del file e riprova.";
+        matchesElement.appendChild(message);
+
+        resultCountElement.textContent = "Calendario non disponibile";
+      } finally {
+        reloadButton.disabled = false;
+        reloadButton.textContent = "Aggiorna calendario";
       }
     }
 
-    const total = p1 + px + p2;
-    p1 /= total;
-    px /= total;
-    p2 /= total;
+    searchElement.addEventListener("input", renderMatches);
+    filterElement.addEventListener("change", renderMatches);
+    sortElement.addEventListener("change", renderMatches);
+    reloadButton.addEventListener("click", loadCalendar);
 
-    document.getElementById("matchTitle").textContent =
-      home + " — " + away;
-    document.getElementById("p1").textContent = pct(p1);
-    document.getElementById("px").textContent = pct(px);
-    document.getElementById("p2").textContent = pct(p2);
-    document.getElementById("over").textContent =
-      "Over 2,5: " + pct(1 - under);
-    document.getElementById("under").textContent =
-      "Under 2,5: " + pct(under);
-    document.getElementById("btts").textContent = pct(btts);
-
-    scores.sort((a, b) => b.p - a.p);
-    document.getElementById("scores").replaceChildren(
-      ...scores.slice(0, 5).map(s => {
-        const row = document.createElement("p");
-        row.textContent = s.h + " - " + s.a + ": " + pct(s.p);
-        return row;
-      })
-    );
-
-    document.getElementById("results").style.display = "block";
-  });
-</script>
-
-<section id="calendario-reale" style="padding:16px;margin:20px 0;border:1px solid #888;border-radius:12px">
-  <h2>Partite reali</h2>
-  <p id="stato-calendario">Caricamento del calendario...</p>
-  <div id="lista-partite"></div>
-</section>
-
-<script>
-async function caricaCalendario() {
-  const stato = document.getElementById("stato-calendario");
-  const lista = document.getElementById("lista-partite");
-
-  try {
-    const risposta = await fetch("data/fixtures.json", {
-      cache: "no-store"
-    });
-
-    if (!risposta.ok) {
-      throw new Error("File dati non trovato");
-    }
-
-    const dati = await risposta.json();
-
-    stato.textContent =
-      "Aggiornamento: " + dati.aggiornato +
-      " · Partite trovate: " + dati.numeroPartite;
-
-    if (!dati.partite || dati.partite.length === 0) {
-      lista.textContent =
-        "Nessuna partita disponibile nel calendario ricevuto.";
-      return;
-    }
-
-    lista.replaceChildren();
-
-    dati.partite.forEach(partita => {
-      const riga = document.createElement("div");
-      riga.style.padding = "12px 0";
-      riga.style.borderTop = "1px solid #888";
-
-      const titolo = document.createElement("strong");
-      titolo.textContent =
-        partita.casa + " - " + partita.trasferta;
-
-      const dettaglio = document.createElement("p");
-      dettaglio.textContent =
-        partita.campionato + " · " +
-        new Date(partita.data).toLocaleString("it-IT", {
-          dateStyle: "short",
-          timeStyle: "short"
-        });
-
-      riga.append(titolo, dettaglio);
-      lista.appendChild(riga);
-    });
-  } catch (errore) {
-    stato.textContent =
-      "Non riesco a caricare il calendario. Controlla il file dati.";
-    console.error(errore);
-  }
-}
-
-caricaCalendario();
-</script>
-
+    loadCalendar();
+  </script>
 </body>
 </html>
