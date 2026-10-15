@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#101827">
-  <meta name="description" content="Football Predictor AI: calendario calcistico e stime probabilistiche delle partite.">
+  <meta name="description" content="Football Predictor AI: calendario calcistico e stime probabilistiche.">
   <title>Football Predictor AI</title>
 
   <style>
@@ -144,6 +144,11 @@
       cursor: pointer;
     }
 
+    button:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
     button:active {
       opacity: 0.8;
     }
@@ -262,11 +267,27 @@
 
     @media (min-width: 650px) {
       .controls {
-        grid-template-columns: 2fr 1fr 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
       .match {
         padding: 18px;
+      }
+    }
+
+    @media (min-width: 850px) {
+      .controls {
+        grid-template-columns: 2fr 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .prediction-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .stat strong {
+        font-size: 21px;
       }
     }
   </style>
@@ -300,7 +321,8 @@
         Caricamento del calendario...
       </p>
       <p class="muted">
-        I dati vengono letti dal file data/fixtures.json del repository.
+        Fonte: data/fixtures.json. I dati dipendono dalla disponibilità
+        e dall'aggiornamento delle fonti collegate.
       </p>
       <button id="reloadButton" type="button">Aggiorna calendario</button>
     </section>
@@ -310,9 +332,16 @@
 
       <div class="controls">
         <div>
-          <label for="search">Cerca squadra o campionato</label>
+          <label for="competition">Competizione</label>
+          <select id="competition">
+            <option value="all">Tutte le competizioni</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="search">Cerca squadra o competizione</label>
           <input id="search" type="search"
-            placeholder="Es. Inter, Juventus, Serie A">
+            placeholder="Es. Inter, Juventus, Champions League">
         </div>
 
         <div>
@@ -345,8 +374,8 @@
   </main>
 
   <footer>
-    Football Predictor AI · Le probabilità sono stime statistiche,
-    non garanzie di risultato.
+    Football Predictor AI · Le probabilità sono stime statistiche
+    sperimentali, non garanzie di risultato.
   </footer>
 
   <script>
@@ -361,6 +390,7 @@
     const futureElement = document.getElementById("futureMatches");
 
     const searchElement = document.getElementById("search");
+    const competitionElement = document.getElementById("competition");
     const filterElement = document.getElementById("filter");
     const sortElement = document.getElementById("sort");
     const reloadButton = document.getElementById("reloadButton");
@@ -371,19 +401,22 @@
     function parseDate(match) {
       if (!match.data) return null;
 
-      const time = match.ora || "12:00";
-      const date = new Date(match.data + "T" + time);
+      const dateText = String(match.data).trim();
+      const timeText = String(match.ora || "12:00").trim();
+
+      const date = new Date(dateText + "T" + timeText);
 
       return Number.isNaN(date.getTime()) ? null : date;
     }
 
     function hasResult(match) {
-      return match.risultatoCasa !== null &&
-        match.risultatoCasa !== undefined &&
-        match.risultatoOspite !== null &&
-        match.risultatoOspite !== undefined &&
-        match.risultatoCasa !== "" &&
-        match.risultatoOspite !== "";
+      const home = match.risultatoCasa;
+      const away = match.risultatoOspite;
+
+      return home !== null && home !== undefined && home !== "" &&
+        away !== null && away !== undefined && away !== "" &&
+        Number.isFinite(Number(home)) &&
+        Number.isFinite(Number(away));
     }
 
     function isPlayed(match) {
@@ -391,9 +424,9 @@
 
       const date = parseDate(match);
 
-      // Evita di trattare eventuali punteggi segnaposto
-      // come risultati di partite ancora future.
-      return !date || date.getTime() <= Date.now();
+      // Se non c'è una data interpretabile, non consideriamo
+      // automaticamente conclusa la partita.
+      return date !== null && date.getTime() <= Date.now();
     }
 
     function formatDate(match) {
@@ -408,13 +441,18 @@
     }
 
     function safeNumber(value) {
+      if (value === null || value === undefined || value === "") {
+        return null;
+      }
+
       const number = Number(value);
-      return Number.isFinite(number) && number >= 0 ? number : null;
+
+      return Number.isFinite(number) && number >= 0
+        ? number
+        : null;
     }
 
     function poissonProbability(goals, lambda) {
-      if (goals === 0) return Math.exp(-lambda);
-
       let probability = Math.exp(-lambda);
 
       for (let i = 1; i <= goals; i++) {
@@ -424,19 +462,28 @@
       return probability;
     }
 
-    function calculatePredictions(home, away) {
-      const historical = allMatches.filter(isPlayed);
+    function calculatePredictions(targetMatch) {
+      const competition = targetMatch.campionato;
+
+      if (!competition || !targetMatch.casa ||
+          !(targetMatch.ospite || targetMatch.trasferta)) {
+        return null;
+      }
+
+      // Usa soltanto partite concluse della stessa competizione.
+      const historical = allMatches.filter(match =>
+        isPlayed(match) &&
+        match.campionato === competition
+      );
 
       if (historical.length < 5) return null;
 
-      const homeName = home.casa;
-      const awayName = away.ospite || away.trasferta;
-
-      if (!homeName || !awayName) return null;
+      const homeName = targetMatch.casa;
+      const awayName = targetMatch.ospite || targetMatch.trasferta;
 
       let totalGoals = 0;
       let totalTeams = 0;
-      let homeGoals = 0;
+      let totalHomeGoals = 0;
       let homeGames = 0;
 
       const stats = {};
@@ -469,25 +516,25 @@
 
         totalGoals += h + a;
         totalTeams += 2;
-        homeGoals += h;
+        totalHomeGoals += h;
         homeGames++;
 
-        const hs = getTeam(hName);
-        const as = getTeam(aName);
+        const homeStats = getTeam(hName);
+        const awayStats = getTeam(aName);
 
-        hs.scored += h;
-        hs.conceded += a;
-        hs.games++;
-        hs.homeScored += h;
-        hs.homeConceded += a;
-        hs.homeGames++;
+        homeStats.scored += h;
+        homeStats.conceded += a;
+        homeStats.games++;
+        homeStats.homeScored += h;
+        homeStats.homeConceded += a;
+        homeStats.homeGames++;
 
-        as.scored += a;
-        as.conceded += h;
-        as.games++;
-        as.awayScored += a;
-        as.awayConceded += h;
-        as.awayGames++;
+        awayStats.scored += a;
+        awayStats.conceded += h;
+        awayStats.games++;
+        awayStats.awayScored += a;
+        awayStats.awayConceded += h;
+        awayStats.awayGames++;
       });
 
       const homeStats = stats[homeName];
@@ -500,7 +547,7 @@
       }
 
       const averageGoalsPerTeam = totalGoals / totalTeams;
-      const averageHomeGoals = homeGoals / homeGames;
+      const averageHomeGoals = totalHomeGoals / homeGames;
 
       if (averageGoalsPerTeam <= 0) return null;
 
@@ -522,7 +569,8 @@
 
       const lambdaHome = Math.max(
         0.15,
-        Math.min(4.5,
+        Math.min(
+          4.5,
           (homeAttack * awayDefence / averageGoalsPerTeam) *
           (averageHomeGoals / averageGoalsPerTeam) *
           1.08
@@ -531,9 +579,9 @@
 
       const lambdaAway = Math.max(
         0.15,
-        Math.min(4.5,
-          (awayAttack * homeDefence / averageGoalsPerTeam) *
-          ((totalGoals / totalTeams) / averageGoalsPerTeam)
+        Math.min(
+          4.5,
+          (awayAttack * homeDefence / averageGoalsPerTeam)
         )
       );
 
@@ -542,6 +590,7 @@
       let awayWin = 0;
       let over25 = 0;
       let bothScore = 0;
+      let totalProbability = 0;
 
       const maxGoals = 10;
 
@@ -550,6 +599,8 @@
           const probability =
             poissonProbability(h, lambdaHome) *
             poissonProbability(a, lambdaAway);
+
+          totalProbability += probability;
 
           if (h > a) homeWin += probability;
           else if (h === a) draw += probability;
@@ -560,16 +611,20 @@
         }
       }
 
+      if (totalProbability <= 0) return null;
+
+      // Normalizza le probabilità per compensare la piccola
+      // parte di probabilità oltre il limite di 10 gol.
+      const normalize = value => value / totalProbability * 100;
+
       return {
-        homeWin: homeWin * 100,
-        draw: draw * 100,
-        awayWin: awayWin * 100,
-        over25: over25 * 100,
-        under25: (1 - over25) * 100,
-        bothScore: bothScore * 100,
-        noBothScore: (1 - bothScore) * 100,
-        lambdaHome,
-        lambdaAway,
+        homeWin: normalize(homeWin),
+        draw: normalize(draw),
+        awayWin: normalize(awayWin),
+        over25: normalize(over25),
+        under25: normalize(totalProbability - over25),
+        bothScore: normalize(bothScore),
+        noBothScore: normalize(totalProbability - bothScore),
         sample: historical.length
       };
     }
@@ -585,6 +640,7 @@
       caption.textContent = label;
 
       card.append(strong, caption);
+
       return card;
     }
 
@@ -618,7 +674,8 @@
 
       const away = document.createElement("div");
       away.className = "team";
-      away.textContent = match.ospite || match.trasferta || "Squadra ospite";
+      away.textContent =
+        match.ospite || match.trasferta || "Squadra ospite";
 
       if (isPlayed(match)) {
         score.textContent =
@@ -638,8 +695,6 @@
       card.append(top, teams, tag);
 
       if (!isPlayed(match)) {
-        const prediction = calculatePredictions(match, match);
-
         const section = document.createElement("div");
         section.className = "predictions";
 
@@ -647,6 +702,8 @@
         title.textContent = "Stime probabilistiche";
 
         section.appendChild(title);
+
+        const prediction = calculatePredictions(match);
 
         if (prediction) {
           const grid = document.createElement("div");
@@ -667,15 +724,17 @@
           const sample = document.createElement("p");
           sample.className = "muted";
           sample.textContent =
-            "Calcolo basato sui risultati disponibili (" +
-            prediction.sample + " partite considerate).";
+            "Calcolo sperimentale basato su " +
+            prediction.sample +
+            " partite concluse della stessa competizione.";
 
           section.appendChild(sample);
         } else {
           const message = document.createElement("p");
           message.className = "muted";
           message.textContent =
-            "Dati storici insufficienti per calcolare una stima affidabile.";
+            "Dati storici insufficienti per stimare questa partita. " +
+            "Servono risultati conclusi delle squadre nella stessa competizione.";
           section.appendChild(message);
         }
 
@@ -692,10 +751,21 @@
     }
 
     function renderMatches() {
-      const query = searchElement.value.trim().toLocaleLowerCase("it-IT");
+      const query = searchElement.value
+        .trim()
+        .toLocaleLowerCase("it-IT");
+
       const filter = filterElement.value;
+      const competition = competitionElement.value;
 
       let filtered = allMatches.filter(match => {
+        if (
+          competition !== "all" &&
+          match.campionato !== competition
+        ) {
+          return false;
+        }
+
         const played = isPlayed(match);
 
         if (filter === "played" && !played) return false;
@@ -705,8 +775,10 @@
           match.casa,
           match.ospite,
           match.trasferta,
-          match.campionato || dataInfo.campionato
-        ].filter(Boolean).join(" ").toLocaleLowerCase("it-IT");
+          match.campionato
+        ].filter(Boolean)
+          .join(" ")
+          .toLocaleLowerCase("it-IT");
 
         return text.includes(query);
       });
@@ -741,6 +813,7 @@
         empty.className = "empty";
         empty.textContent =
           "Nessuna partita trovata con i filtri selezionati.";
+
         matchesElement.appendChild(empty);
         return;
       }
@@ -754,15 +827,46 @@
       matchesElement.appendChild(fragment);
     }
 
+    function populateCompetitions() {
+      const selected = competitionElement.value;
+
+      const competitions = [
+        ...new Set(
+          allMatches
+            .map(match => match.campionato)
+            .filter(name => typeof name === "string" && name.trim())
+        )
+      ].sort((a, b) => a.localeCompare(b, "it"));
+
+      competitionElement.replaceChildren();
+
+      const allOption = document.createElement("option");
+      allOption.value = "all";
+      allOption.textContent = "Tutte le competizioni";
+      competitionElement.appendChild(allOption);
+
+      competitions.forEach(name => {
+        const option = document.createElement("option");
+        option.value = name;
+        option.textContent = name;
+        competitionElement.appendChild(option);
+      });
+
+      if (competitions.includes(selected)) {
+        competitionElement.value = selected;
+      }
+    }
+
     async function loadCalendar() {
       statusElement.textContent = "Caricamento del calendario...";
       reloadButton.disabled = true;
       reloadButton.textContent = "Caricamento...";
 
       try {
-        const response = await fetch("data/fixtures.json", {
-          cache: "no-store"
-        });
+        const response = await fetch(
+          "data/fixtures.json?t=" + Date.now(),
+          { cache: "no-store" }
+        );
 
         if (!response.ok) {
           throw new Error("Errore HTTP " + response.status);
@@ -771,11 +875,15 @@
         const data = await response.json();
 
         if (!Array.isArray(data.partite)) {
-          throw new Error("Il file JSON non contiene un elenco partite valido.");
+          throw new Error(
+            "Il file JSON non contiene un elenco partite valido."
+          );
         }
 
         dataInfo = data;
         allMatches = data.partite;
+
+        populateCompetitions();
 
         const played = allMatches.filter(isPlayed).length;
         const future = allMatches.length - played;
@@ -784,10 +892,16 @@
         playedElement.textContent = played;
         futureElement.textContent = future;
 
+        const competitionCount = new Set(
+          allMatches
+            .map(match => match.campionato)
+            .filter(Boolean)
+        ).size;
+
         statusElement.textContent =
-          "Dati caricati correttamente · " +
-          (data.campionato || "Campionato non specificato") +
-          " · Ultimo aggiornamento: " +
+          "Calendario caricato · " +
+          allMatches.length + " partite · " +
+          competitionCount + " competizioni · Aggiornamento: " +
           (data.ultimoAggiornamento || "non indicato");
 
         renderMatches();
@@ -804,8 +918,8 @@
         message.className = "empty";
         message.textContent =
           "Non riesco a leggere il calendario. Controlla il percorso del file e riprova.";
-        matchesElement.appendChild(message);
 
+        matchesElement.appendChild(message);
         resultCountElement.textContent = "Calendario non disponibile";
       } finally {
         reloadButton.disabled = false;
@@ -814,6 +928,7 @@
     }
 
     searchElement.addEventListener("input", renderMatches);
+    competitionElement.addEventListener("change", renderMatches);
     filterElement.addEventListener("change", renderMatches);
     sortElement.addEventListener("change", renderMatches);
     reloadButton.addEventListener("click", loadCalendar);
