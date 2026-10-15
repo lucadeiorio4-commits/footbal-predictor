@@ -1,14 +1,14 @@
 {
-  "aggiornato": "2026-10-14",
+  "aggiornato": "2026-10-15",
   "numeroPartite": 0,
   "partite": [],
   "avvisi": [
-    "Premier League: errore API",
-    "La Liga: errore API",
-    "Serie A: errore API",
-    "Bundesliga: errore API",
-    "Ligue 1: errore API",
-    "Champions League: errore API",
-    "Europa League: errore API"
+    "Premier League: {'plan': 'Free plans do not have access to this season, try from 2022 to 2024.'}",
+    "La Liga: {'plan': 'Free plans do not have access to this season, try from 2022 to 2024.'}",
+    "Serie A: {'plan': 'Free plans do not have access to this season, try from 2022 to 2024.'}",
+    "Bundesliga: {'plan': 'Free plans do not have access to this season, try from 2022 to 2024.'}",
+    "Ligue 1: {'plan': 'Free plans do not have access to this season, try from 2022 to 2024.'}",
+    "Champions League: {'plan': 'Free plans do not have access to this season, try from 2022 to 2024.'}",
+    "Europa League: {'plan': 'Free plans do not have access to this season, try from 2022 to 2024.'}"
   ]
 }
