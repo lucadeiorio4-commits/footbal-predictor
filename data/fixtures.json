@@ -1,119 +1,3808 @@
-
-name: Aggiorna dati calcistici
-
-on:
-  workflow_dispatch:
-  schedule:
-    - cron: "17 */6 * * *"
-
-permissions:
-  contents: write
-
-jobs:
-  aggiorna:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Scarica repository
-        uses: actions/checkout@v4
-
-      - name: Scarica e converti dati OpenFootball
-        run: |
-          python - <<'PY'
-          import json
-          import urllib.request
-          from pathlib import Path
-
-          url = (
-              "https://raw.githubusercontent.com/"
-              "openfootball/football.json/master/"
-              "2026-27/it.1.json"
-          )
-
-          req = urllib.request.Request(
-              url,
-              headers={"User-Agent": "Football-Predictor-AI"}
-          )
-
-          with urllib.request.urlopen(req, timeout=30) as response:
-              source = json.load(response)
-
-          matches = source.get("matches", [])
-
-          if not matches:
-              raise RuntimeError(
-                  "OpenFootball non ha restituito partite. "
-                  "Il file esistente non verrà sovrascritto."
-              )
-
-          fixtures = []
-
-          for match in matches:
-              score = match.get("score") or {}
-              ft = score.get("ft")
-
-              fixtures.append({
-                  "campionato": source.get("name", "Italian Serie A"),
-                  "giornata": match.get("round", ""),
-                  "data": match.get("date", ""),
-                  "ora": match.get("time", ""),
-                  "casa": match.get("team1", ""),
-                  "ospite": match.get("team2", ""),
-                  "risultatoCasa": (
-                      ft[0] if isinstance(ft, list)
-                      and len(ft) == 2 else None
-                  ),
-                  "risultatoOspite": (
-                      ft[1] if isinstance(ft, list)
-                      and len(ft) == 2 else None
-                  )
-              })
-
-          output = {
-              "fonte": "OpenFootball",
-              "campionato": source.get("name", "Italian Serie A"),
-              "ultimoAggiornamento": __import__("datetime").datetime.now(
-                  __import__("datetime").timezone.utc
-              ).isoformat(),
-              "numeroPartite": len(fixtures),
-              "partite": fixtures
-          }
-
-          Path("data").mkdir(exist_ok=True)
-          Path("data/fixtures.json").write_text(
-              json.dumps(output, ensure_ascii=False, indent=2),
-              encoding="utf-8"
-          )
-
-          print("Campionato:", output["campionato"])
-          print("Partite elaborate:", len(fixtures))
-          PY
-
-      - name: Verifica dati generati
-        run: |
-          python - <<'PY'
-          import json
-          from pathlib import Path
-
-          path = Path("data/fixtures.json")
-          data = json.loads(path.read_text(encoding="utf-8"))
-
-          assert isinstance(data.get("partite"), list)
-          assert data["numeroPartite"] == len(data["partite"])
-          assert data["numeroPartite"] > 0
-
-          print("Verifica completata:", data["numeroPartite"], "partite")
-          PY
-
-      - name: Salva dati nel repository
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email \
-            "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/fixtures.json
-          if git diff --cached --quiet; then
-            echo "Nessuna modifica ai dati."
-          else
-            git commit -m "Aggiorna dati calcistici da OpenFootball"
-            git push
-          fi
+{
+  "fonte": "OpenFootball",
+  "campionato": "Italian Serie A 2026/27",
+  "ultimoAggiornamento": "2026-10-15T12:52:07.105471+00:00",
+  "numeroPartite": 380,
+  "partite": [
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 1",
+      "data": "2026-08-22",
+      "ora": "18:30",
+      "casa": "Udinese Calcio",
+      "ospite": "Como 1907",
+      "risultatoCasa": 1,
+      "risultatoOspite": 1
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 1",
+      "data": "2026-08-22",
+      "ora": "18:30",
+      "casa": "FC Internazionale Milano",
+      "ospite": "AC Monza",
+      "risultatoCasa": 4,
+      "risultatoOspite": 1
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 1",
+      "data": "2026-08-22",
+      "ora": "20:45",
+      "casa": "Genoa CFC",
+      "ospite": "SSC Napoli",
+      "risultatoCasa": 0,
+      "risultatoOspite": 2
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 1",
+      "data": "2026-08-22",
+      "ora": "20:45",
+      "casa": "Parma Calcio 1913",
+      "ospite": "Cagliari Calcio",
+      "risultatoCasa": 0,
+      "risultatoOspite": 1
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 1",
+      "data": "2026-08-23",
+      "ora": "18:30",
+      "casa": "Frosinone Calcio",
+      "ospite": "Juventus FC",
+      "risultatoCasa": 0,
+      "risultatoOspite": 1
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 1",
+      "data": "2026-08-23",
+      "ora": "18:30",
+      "casa": "Venezia FC",
+      "ospite": "US Lecce",
+      "risultatoCasa": 0,
+      "risultatoOspite": 2
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 1",
+      "data": "2026-08-23",
+      "ora": "20:45",
+      "casa": "Atalanta BC",
+      "ospite": "US Sassuolo Calcio",
+      "risultatoCasa": 2,
+      "risultatoOspite": 1
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 1",
+      "data": "2026-08-23",
+      "ora": "20:45",
+      "casa": "Torino FC",
+      "ospite": "AC Milan",
+      "risultatoCasa": 1,
+      "risultatoOspite": 2
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 1",
+      "data": "2026-08-24",
+      "ora": "18:30",
+      "casa": "Bologna FC 1909",
+      "ospite": "SS Lazio",
+      "risultatoCasa": 0,
+      "risultatoOspite": 1
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 1",
+      "data": "2026-08-24",
+      "ora": "20:45",
+      "casa": "AS Roma",
+      "ospite": "ACF Fiorentina",
+      "risultatoCasa": 4,
+      "risultatoOspite": 0
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 2",
+      "data": "2026-08-28",
+      "ora": "20:45",
+      "casa": "AC Milan",
+      "ospite": "Venezia FC",
+      "risultatoCasa": 2,
+      "risultatoOspite": 0
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 2",
+      "data": "2026-08-29",
+      "ora": "18:30",
+      "casa": "US Sassuolo Calcio",
+      "ospite": "Torino FC",
+      "risultatoCasa": 2,
+      "risultatoOspite": 1
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 2",
+      "data": "2026-08-29",
+      "ora": "18:30",
+      "casa": "AC Monza",
+      "ospite": "Udinese Calcio",
+      "risultatoCasa": 2,
+      "risultatoOspite": 3
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 2",
+      "data": "2026-08-29",
+      "ora": "18:30",
+      "casa": "ACF Fiorentina",
+      "ospite": "Frosinone Calcio",
+      "risultatoCasa": 0,
+      "risultatoOspite": 3
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 2",
+      "data": "2026-08-29",
+      "ora": "20:45",
+      "casa": "Juventus FC",
+      "ospite": "Parma Calcio 1913",
+      "risultatoCasa": 2,
+      "risultatoOspite": 0
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 2",
+      "data": "2026-08-30",
+      "ora": "18:30",
+      "casa": "SSC Napoli",
+      "ospite": "Como 1907",
+      "risultatoCasa": 1,
+      "risultatoOspite": 2
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 2",
+      "data": "2026-08-30",
+      "ora": "20:45",
+      "casa": "SS Lazio",
+      "ospite": "Genoa CFC",
+      "risultatoCasa": 1,
+      "risultatoOspite": 0
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 2",
+      "data": "2026-08-30",
+      "ora": "20:45",
+      "casa": "Cagliari Calcio",
+      "ospite": "FC Internazionale Milano",
+      "risultatoCasa": 0,
+      "risultatoOspite": 1
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 2",
+      "data": "2026-08-31",
+      "ora": "18:30",
+      "casa": "US Lecce",
+      "ospite": "AS Roma",
+      "risultatoCasa": 0,
+      "risultatoOspite": 4
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 2",
+      "data": "2026-08-31",
+      "ora": "20:45",
+      "casa": "Atalanta BC",
+      "ospite": "Bologna FC 1909",
+      "risultatoCasa": 1,
+      "risultatoOspite": 0
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 3",
+      "data": "2026-09-04",
+      "ora": "20:45",
+      "casa": "Genoa CFC",
+      "ospite": "Como 1907",
+      "risultatoCasa": 1,
+      "risultatoOspite": 4
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 3",
+      "data": "2026-09-05",
+      "ora": "15:00",
+      "casa": "ACF Fiorentina",
+      "ospite": "Torino FC",
+      "risultatoCasa": 1,
+      "risultatoOspite": 2
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 3",
+      "data": "2026-09-05",
+      "ora": "18:00",
+      "casa": "FC Internazionale Milano",
+      "ospite": "SSC Napoli",
+      "risultatoCasa": 3,
+      "risultatoOspite": 2
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 3",
+      "data": "2026-09-05",
+      "ora": "20:45",
+      "casa": "AS Roma",
+      "ospite": "Atalanta BC",
+      "risultatoCasa": 2,
+      "risultatoOspite": 1
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 3",
+      "data": "2026-09-06",
+      "ora": "15:00",
+      "casa": "Parma Calcio 1913",
+      "ospite": "AC Monza",
+      "risultatoCasa": 1,
+      "risultatoOspite": 1
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 3",
+      "data": "2026-09-06",
+      "ora": "15:00",
+      "casa": "Frosinone Calcio",
+      "ospite": "Venezia FC",
+      "risultatoCasa": 3,
+      "risultatoOspite": 2
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 3",
+      "data": "2026-09-06",
+      "ora": "18:00",
+      "casa": "Bologna FC 1909",
+      "ospite": "US Sassuolo Calcio",
+      "risultatoCasa": 2,
+      "risultatoOspite": 2
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 3",
+      "data": "2026-09-06",
+      "ora": "20:45",
+      "casa": "Juventus FC",
+      "ospite": "AC Milan",
+      "risultatoCasa": 1,
+      "risultatoOspite": 1
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 3",
+      "data": "2026-09-07",
+      "ora": "18:30",
+      "casa": "Cagliari Calcio",
+      "ospite": "US Lecce",
+      "risultatoCasa": 1,
+      "risultatoOspite": 0
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 3",
+      "data": "2026-09-07",
+      "ora": "20:45",
+      "casa": "Udinese Calcio",
+      "ospite": "SS Lazio",
+      "risultatoCasa": 1,
+      "risultatoOspite": 2
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 4",
+      "data": "2026-09-11",
+      "ora": "20:45",
+      "casa": "Venezia FC",
+      "ospite": "ACF Fiorentina",
+      "risultatoCasa": 2,
+      "risultatoOspite": 4
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 4",
+      "data": "2026-09-12",
+      "ora": "15:00",
+      "casa": "Genoa CFC",
+      "ospite": "Frosinone Calcio",
+      "risultatoCasa": 1,
+      "risultatoOspite": 1
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 4",
+      "data": "2026-09-12",
+      "ora": "18:00",
+      "casa": "SS Lazio",
+      "ospite": "AC Milan",
+      "risultatoCasa": 2,
+      "risultatoOspite": 2
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 4",
+      "data": "2026-09-12",
+      "ora": "20:45",
+      "casa": "Atalanta BC",
+      "ospite": "Cagliari Calcio",
+      "risultatoCasa": 1,
+      "risultatoOspite": 2
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 4",
+      "data": "2026-09-13",
+      "ora": "15:00",
+      "casa": "US Lecce",
+      "ospite": "AC Monza",
+      "risultatoCasa": 3,
+      "risultatoOspite": 2
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 4",
+      "data": "2026-09-13",
+      "ora": "18:00",
+      "casa": "SSC Napoli",
+      "ospite": "Bologna FC 1909",
+      "risultatoCasa": 1,
+      "risultatoOspite": 0
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 4",
+      "data": "2026-09-13",
+      "ora": "20:45",
+      "casa": "US Sassuolo Calcio",
+      "ospite": "Juventus FC",
+      "risultatoCasa": 3,
+      "risultatoOspite": 2
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 4",
+      "data": "2026-09-14",
+      "ora": "18:30",
+      "casa": "Como 1907",
+      "ospite": "Parma Calcio 1913",
+      "risultatoCasa": 2,
+      "risultatoOspite": 1
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 4",
+      "data": "2026-09-14",
+      "ora": "18:30",
+      "casa": "Torino FC",
+      "ospite": "AS Roma",
+      "risultatoCasa": 0,
+      "risultatoOspite": 2
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 4",
+      "data": "2026-09-14",
+      "ora": "20:45",
+      "casa": "FC Internazionale Milano",
+      "ospite": "Udinese Calcio",
+      "risultatoCasa": 5,
+      "risultatoOspite": 3
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 5",
+      "data": "2026-09-18",
+      "ora": "20:45",
+      "casa": "AC Monza",
+      "ospite": "US Sassuolo Calcio",
+      "risultatoCasa": 2,
+      "risultatoOspite": 1
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 5",
+      "data": "2026-09-19",
+      "ora": "15:00",
+      "casa": "Bologna FC 1909",
+      "ospite": "Torino FC",
+      "risultatoCasa": 1,
+      "risultatoOspite": 1
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 5",
+      "data": "2026-09-19",
+      "ora": "15:00",
+      "casa": "Udinese Calcio",
+      "ospite": "Cagliari Calcio",
+      "risultatoCasa": 0,
+      "risultatoOspite": 1
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 5",
+      "data": "2026-09-19",
+      "ora": "18:00",
+      "casa": "AS Roma",
+      "ospite": "FC Internazionale Milano",
+      "risultatoCasa": 2,
+      "risultatoOspite": 2
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 5",
+      "data": "2026-09-19",
+      "ora": "20:45",
+      "casa": "Venezia FC",
+      "ospite": "SS Lazio",
+      "risultatoCasa": 0,
+      "risultatoOspite": 2
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 5",
+      "data": "2026-09-20",
+      "ora": "12:30",
+      "casa": "ACF Fiorentina",
+      "ospite": "SSC Napoli",
+      "risultatoCasa": 1,
+      "risultatoOspite": 1
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 5",
+      "data": "2026-09-20",
+      "ora": "15:00",
+      "casa": "Frosinone Calcio",
+      "ospite": "Como 1907",
+      "risultatoCasa": 2,
+      "risultatoOspite": 0
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 5",
+      "data": "2026-09-20",
+      "ora": "15:00",
+      "casa": "Parma Calcio 1913",
+      "ospite": "Genoa CFC",
+      "risultatoCasa": 2,
+      "risultatoOspite": 1
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 5",
+      "data": "2026-09-20",
+      "ora": "18:00",
+      "casa": "Juventus FC",
+      "ospite": "Atalanta BC",
+      "risultatoCasa": 2,
+      "risultatoOspite": 0
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 5",
+      "data": "2026-09-20",
+      "ora": "20:45",
+      "casa": "AC Milan",
+      "ospite": "US Lecce",
+      "risultatoCasa": 3,
+      "risultatoOspite": 0
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 6",
+      "data": "2026-10-10",
+      "ora": "15:00",
+      "casa": "Genoa CFC",
+      "ospite": "ACF Fiorentina",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 6",
+      "data": "2026-10-10",
+      "ora": "18:00",
+      "casa": "FC Internazionale Milano",
+      "ospite": "Parma Calcio 1913",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 6",
+      "data": "2026-10-10",
+      "ora": "20:45",
+      "casa": "SSC Napoli",
+      "ospite": "Frosinone Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 6",
+      "data": "2026-10-11",
+      "ora": "12:30",
+      "casa": "Como 1907",
+      "ospite": "AS Roma",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 6",
+      "data": "2026-10-11",
+      "ora": "15:00",
+      "casa": "US Lecce",
+      "ospite": "Bologna FC 1909",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 6",
+      "data": "2026-10-11",
+      "ora": "15:00",
+      "casa": "SS Lazio",
+      "ospite": "AC Monza",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 6",
+      "data": "2026-10-11",
+      "ora": "18:00",
+      "casa": "US Sassuolo Calcio",
+      "ospite": "AC Milan",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 6",
+      "data": "2026-10-11",
+      "ora": "20:45",
+      "casa": "Cagliari Calcio",
+      "ospite": "Juventus FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 6",
+      "data": "2026-10-12",
+      "ora": "18:30",
+      "casa": "Atalanta BC",
+      "ospite": "Venezia FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 6",
+      "data": "2026-10-12",
+      "ora": "20:45",
+      "casa": "Torino FC",
+      "ospite": "Udinese Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 7",
+      "data": "2026-10-16",
+      "ora": "20:45",
+      "casa": "Frosinone Calcio",
+      "ospite": "US Sassuolo Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 7",
+      "data": "2026-10-17",
+      "ora": "15:00",
+      "casa": "Venezia FC",
+      "ospite": "SSC Napoli",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 7",
+      "data": "2026-10-17",
+      "ora": "18:00",
+      "casa": "Bologna FC 1909",
+      "ospite": "FC Internazionale Milano",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 7",
+      "data": "2026-10-17",
+      "ora": "20:45",
+      "casa": "AS Roma",
+      "ospite": "Genoa CFC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 7",
+      "data": "2026-10-18",
+      "ora": "12:30",
+      "casa": "Udinese Calcio",
+      "ospite": "US Lecce",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 7",
+      "data": "2026-10-18",
+      "ora": "15:00",
+      "casa": "ACF Fiorentina",
+      "ospite": "Como 1907",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 7",
+      "data": "2026-10-18",
+      "ora": "18:00",
+      "casa": "AC Milan",
+      "ospite": "Atalanta BC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 7",
+      "data": "2026-10-18",
+      "ora": "20:45",
+      "casa": "Juventus FC",
+      "ospite": "SS Lazio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 7",
+      "data": "2026-10-19",
+      "ora": "18:30",
+      "casa": "AC Monza",
+      "ospite": "Cagliari Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 7",
+      "data": "2026-10-19",
+      "ora": "20:45",
+      "casa": "Parma Calcio 1913",
+      "ospite": "Torino FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 8",
+      "data": "2026-10-23",
+      "ora": "20:45",
+      "casa": "Torino FC",
+      "ospite": "AC Monza",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 8",
+      "data": "2026-10-24",
+      "ora": "15:00",
+      "casa": "Cagliari Calcio",
+      "ospite": "Bologna FC 1909",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 8",
+      "data": "2026-10-24",
+      "ora": "15:00",
+      "casa": "Como 1907",
+      "ospite": "US Sassuolo Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 8",
+      "data": "2026-10-24",
+      "ora": "18:00",
+      "casa": "SSC Napoli",
+      "ospite": "AS Roma",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 8",
+      "data": "2026-10-24",
+      "ora": "20:45",
+      "casa": "SS Lazio",
+      "ospite": "Parma Calcio 1913",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 8",
+      "data": "2026-10-25",
+      "ora": "12:30",
+      "casa": "FC Internazionale Milano",
+      "ospite": "ACF Fiorentina",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 8",
+      "data": "2026-10-25",
+      "ora": "15:00",
+      "casa": "Atalanta BC",
+      "ospite": "Frosinone Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 8",
+      "data": "2026-10-25",
+      "ora": "15:00",
+      "casa": "Genoa CFC",
+      "ospite": "Venezia FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 8",
+      "data": "2026-10-25",
+      "ora": "18:00",
+      "casa": "US Lecce",
+      "ospite": "Juventus FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 8",
+      "data": "2026-10-25",
+      "ora": "20:45",
+      "casa": "Udinese Calcio",
+      "ospite": "AC Milan",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 9",
+      "data": "2026-10-27",
+      "ora": "18:30",
+      "casa": "US Sassuolo Calcio",
+      "ospite": "SS Lazio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 9",
+      "data": "2026-10-27",
+      "ora": "20:45",
+      "casa": "AS Roma",
+      "ospite": "Cagliari Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 9",
+      "data": "2026-10-27",
+      "ora": "20:45",
+      "casa": "Torino FC",
+      "ospite": "Como 1907",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 9",
+      "data": "2026-10-28",
+      "ora": "18:30",
+      "casa": "AC Milan",
+      "ospite": "Bologna FC 1909",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 9",
+      "data": "2026-10-28",
+      "ora": "18:30",
+      "casa": "Venezia FC",
+      "ospite": "FC Internazionale Milano",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 9",
+      "data": "2026-10-28",
+      "ora": "18:30",
+      "casa": "Parma Calcio 1913",
+      "ospite": "Udinese Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 9",
+      "data": "2026-10-28",
+      "ora": "20:45",
+      "casa": "Genoa CFC",
+      "ospite": "Juventus FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 9",
+      "data": "2026-10-28",
+      "ora": "20:45",
+      "casa": "AC Monza",
+      "ospite": "SSC Napoli",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 9",
+      "data": "2026-10-29",
+      "ora": "18:30",
+      "casa": "Frosinone Calcio",
+      "ospite": "US Lecce",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 9",
+      "data": "2026-10-29",
+      "ora": "20:45",
+      "casa": "ACF Fiorentina",
+      "ospite": "Atalanta BC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 10",
+      "data": "2026-10-31",
+      "ora": "15:00",
+      "casa": "Bologna FC 1909",
+      "ospite": "AC Monza",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 10",
+      "data": "2026-10-31",
+      "ora": "18:00",
+      "casa": "Udinese Calcio",
+      "ospite": "AS Roma",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 10",
+      "data": "2026-10-31",
+      "ora": "20:45",
+      "casa": "AC Milan",
+      "ospite": "FC Internazionale Milano",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 10",
+      "data": "2026-11-01",
+      "ora": "12:30",
+      "casa": "Como 1907",
+      "ospite": "Venezia FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 10",
+      "data": "2026-11-01",
+      "ora": "15:00",
+      "casa": "Frosinone Calcio",
+      "ospite": "Torino FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 10",
+      "data": "2026-11-01",
+      "ora": "15:00",
+      "casa": "SS Lazio",
+      "ospite": "Cagliari Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 10",
+      "data": "2026-11-01",
+      "ora": "18:00",
+      "casa": "US Lecce",
+      "ospite": "Genoa CFC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 10",
+      "data": "2026-11-01",
+      "ora": "20:45",
+      "casa": "Juventus FC",
+      "ospite": "SSC Napoli",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 10",
+      "data": "2026-11-02",
+      "ora": "18:30",
+      "casa": "US Sassuolo Calcio",
+      "ospite": "ACF Fiorentina",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 10",
+      "data": "2026-11-02",
+      "ora": "20:45",
+      "casa": "Atalanta BC",
+      "ospite": "Parma Calcio 1913",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 11",
+      "data": "2026-11-06",
+      "ora": "20:45",
+      "casa": "Venezia FC",
+      "ospite": "Udinese Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 11",
+      "data": "2026-11-07",
+      "ora": "15:00",
+      "casa": "Torino FC",
+      "ospite": "US Lecce",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 11",
+      "data": "2026-11-07",
+      "ora": "15:00",
+      "casa": "Cagliari Calcio",
+      "ospite": "Frosinone Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 11",
+      "data": "2026-11-07",
+      "ora": "18:00",
+      "casa": "Parma Calcio 1913",
+      "ospite": "Bologna FC 1909",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 11",
+      "data": "2026-11-07",
+      "ora": "20:45",
+      "casa": "AS Roma",
+      "ospite": "US Sassuolo Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 11",
+      "data": "2026-11-08",
+      "ora": "12:30",
+      "casa": "SSC Napoli",
+      "ospite": "SS Lazio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 11",
+      "data": "2026-11-08",
+      "ora": "15:00",
+      "casa": "Genoa CFC",
+      "ospite": "AC Milan",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 11",
+      "data": "2026-11-08",
+      "ora": "15:00",
+      "casa": "AC Monza",
+      "ospite": "Atalanta BC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 11",
+      "data": "2026-11-08",
+      "ora": "18:00",
+      "casa": "FC Internazionale Milano",
+      "ospite": "Como 1907",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 11",
+      "data": "2026-11-08",
+      "ora": "20:45",
+      "casa": "ACF Fiorentina",
+      "ospite": "Juventus FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 12",
+      "data": "2026-11-21",
+      "ora": "15:00",
+      "casa": "Como 1907",
+      "ospite": "Cagliari Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 12",
+      "data": "2026-11-21",
+      "ora": "15:00",
+      "casa": "SS Lazio",
+      "ospite": "US Lecce",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 12",
+      "data": "2026-11-21",
+      "ora": "18:00",
+      "casa": "Parma Calcio 1913",
+      "ospite": "AS Roma",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 12",
+      "data": "2026-11-21",
+      "ora": "20:45",
+      "casa": "SSC Napoli",
+      "ospite": "Torino FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 12",
+      "data": "2026-11-22",
+      "ora": "12:30",
+      "casa": "US Sassuolo Calcio",
+      "ospite": "Genoa CFC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 12",
+      "data": "2026-11-22",
+      "ora": "15:00",
+      "casa": "AC Milan",
+      "ospite": "Frosinone Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 12",
+      "data": "2026-11-22",
+      "ora": "18:00",
+      "casa": "Bologna FC 1909",
+      "ospite": "Udinese Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 12",
+      "data": "2026-11-22",
+      "ora": "20:45",
+      "casa": "Atalanta BC",
+      "ospite": "FC Internazionale Milano",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 12",
+      "data": "2026-11-23",
+      "ora": "18:30",
+      "casa": "AC Monza",
+      "ospite": "ACF Fiorentina",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 12",
+      "data": "2026-11-23",
+      "ora": "20:45",
+      "casa": "Juventus FC",
+      "ospite": "Venezia FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 13",
+      "data": "2026-11-29",
+      "ora": "",
+      "casa": "US Sassuolo Calcio",
+      "ospite": "SSC Napoli",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 13",
+      "data": "2026-11-29",
+      "ora": "",
+      "casa": "Cagliari Calcio",
+      "ospite": "AC Milan",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 13",
+      "data": "2026-11-29",
+      "ora": "",
+      "casa": "Como 1907",
+      "ospite": "Juventus FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 13",
+      "data": "2026-11-29",
+      "ora": "",
+      "casa": "AS Roma",
+      "ospite": "AC Monza",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 13",
+      "data": "2026-11-29",
+      "ora": "",
+      "casa": "Frosinone Calcio",
+      "ospite": "Parma Calcio 1913",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 13",
+      "data": "2026-11-29",
+      "ora": "",
+      "casa": "Torino FC",
+      "ospite": "SS Lazio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 13",
+      "data": "2026-11-29",
+      "ora": "",
+      "casa": "Venezia FC",
+      "ospite": "Bologna FC 1909",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 13",
+      "data": "2026-11-29",
+      "ora": "",
+      "casa": "US Lecce",
+      "ospite": "Atalanta BC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 13",
+      "data": "2026-11-29",
+      "ora": "",
+      "casa": "Udinese Calcio",
+      "ospite": "ACF Fiorentina",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 13",
+      "data": "2026-11-29",
+      "ora": "",
+      "casa": "FC Internazionale Milano",
+      "ospite": "Genoa CFC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 14",
+      "data": "2026-12-06",
+      "ora": "",
+      "casa": "Genoa CFC",
+      "ospite": "Torino FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 14",
+      "data": "2026-12-06",
+      "ora": "",
+      "casa": "Juventus FC",
+      "ospite": "Udinese Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 14",
+      "data": "2026-12-06",
+      "ora": "",
+      "casa": "Frosinone Calcio",
+      "ospite": "FC Internazionale Milano",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 14",
+      "data": "2026-12-06",
+      "ora": "",
+      "casa": "Bologna FC 1909",
+      "ospite": "AS Roma",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 14",
+      "data": "2026-12-06",
+      "ora": "",
+      "casa": "ACF Fiorentina",
+      "ospite": "Cagliari Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 14",
+      "data": "2026-12-06",
+      "ora": "",
+      "casa": "SS Lazio",
+      "ospite": "Atalanta BC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 14",
+      "data": "2026-12-06",
+      "ora": "",
+      "casa": "AC Milan",
+      "ospite": "Parma Calcio 1913",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 14",
+      "data": "2026-12-06",
+      "ora": "",
+      "casa": "Venezia FC",
+      "ospite": "US Sassuolo Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 14",
+      "data": "2026-12-06",
+      "ora": "",
+      "casa": "AC Monza",
+      "ospite": "Como 1907",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 14",
+      "data": "2026-12-06",
+      "ora": "",
+      "casa": "SSC Napoli",
+      "ospite": "US Lecce",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 15",
+      "data": "2026-12-13",
+      "ora": "",
+      "casa": "SSC Napoli",
+      "ospite": "AC Milan",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 15",
+      "data": "2026-12-13",
+      "ora": "",
+      "casa": "Como 1907",
+      "ospite": "Bologna FC 1909",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 15",
+      "data": "2026-12-13",
+      "ora": "",
+      "casa": "Udinese Calcio",
+      "ospite": "Frosinone Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 15",
+      "data": "2026-12-13",
+      "ora": "",
+      "casa": "US Lecce",
+      "ospite": "US Sassuolo Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 15",
+      "data": "2026-12-13",
+      "ora": "",
+      "casa": "Parma Calcio 1913",
+      "ospite": "ACF Fiorentina",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 15",
+      "data": "2026-12-13",
+      "ora": "",
+      "casa": "Cagliari Calcio",
+      "ospite": "Venezia FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 15",
+      "data": "2026-12-13",
+      "ora": "",
+      "casa": "FC Internazionale Milano",
+      "ospite": "Torino FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 15",
+      "data": "2026-12-13",
+      "ora": "",
+      "casa": "Juventus FC",
+      "ospite": "AC Monza",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 15",
+      "data": "2026-12-13",
+      "ora": "",
+      "casa": "Atalanta BC",
+      "ospite": "Genoa CFC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 15",
+      "data": "2026-12-13",
+      "ora": "",
+      "casa": "SS Lazio",
+      "ospite": "AS Roma",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 16",
+      "data": "2026-12-20",
+      "ora": "",
+      "casa": "AC Milan",
+      "ospite": "Como 1907",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 16",
+      "data": "2026-12-20",
+      "ora": "",
+      "casa": "US Sassuolo Calcio",
+      "ospite": "Parma Calcio 1913",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 16",
+      "data": "2026-12-20",
+      "ora": "",
+      "casa": "AS Roma",
+      "ospite": "Juventus FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 16",
+      "data": "2026-12-20",
+      "ora": "",
+      "casa": "Frosinone Calcio",
+      "ospite": "SS Lazio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 16",
+      "data": "2026-12-20",
+      "ora": "",
+      "casa": "Atalanta BC",
+      "ospite": "SSC Napoli",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 16",
+      "data": "2026-12-20",
+      "ora": "",
+      "casa": "ACF Fiorentina",
+      "ospite": "Bologna FC 1909",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 16",
+      "data": "2026-12-20",
+      "ora": "",
+      "casa": "Genoa CFC",
+      "ospite": "Udinese Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 16",
+      "data": "2026-12-20",
+      "ora": "",
+      "casa": "US Lecce",
+      "ospite": "FC Internazionale Milano",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 16",
+      "data": "2026-12-20",
+      "ora": "",
+      "casa": "Torino FC",
+      "ospite": "Cagliari Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 16",
+      "data": "2026-12-20",
+      "ora": "",
+      "casa": "Venezia FC",
+      "ospite": "AC Monza",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 17",
+      "data": "2027-01-03",
+      "ora": "",
+      "casa": "Udinese Calcio",
+      "ospite": "Atalanta BC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 17",
+      "data": "2027-01-03",
+      "ora": "",
+      "casa": "Como 1907",
+      "ospite": "US Lecce",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 17",
+      "data": "2027-01-03",
+      "ora": "",
+      "casa": "AS Roma",
+      "ospite": "Frosinone Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 17",
+      "data": "2027-01-03",
+      "ora": "",
+      "casa": "Parma Calcio 1913",
+      "ospite": "SSC Napoli",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 17",
+      "data": "2027-01-03",
+      "ora": "",
+      "casa": "Cagliari Calcio",
+      "ospite": "Genoa CFC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 17",
+      "data": "2027-01-03",
+      "ora": "",
+      "casa": "Torino FC",
+      "ospite": "Venezia FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 17",
+      "data": "2027-01-03",
+      "ora": "",
+      "casa": "AC Monza",
+      "ospite": "AC Milan",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 17",
+      "data": "2027-01-03",
+      "ora": "",
+      "casa": "FC Internazionale Milano",
+      "ospite": "US Sassuolo Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 17",
+      "data": "2027-01-03",
+      "ora": "",
+      "casa": "Bologna FC 1909",
+      "ospite": "Juventus FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 17",
+      "data": "2027-01-03",
+      "ora": "",
+      "casa": "ACF Fiorentina",
+      "ospite": "SS Lazio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 18",
+      "data": "2027-01-06",
+      "ora": "",
+      "casa": "Frosinone Calcio",
+      "ospite": "Bologna FC 1909",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 18",
+      "data": "2027-01-06",
+      "ora": "",
+      "casa": "US Sassuolo Calcio",
+      "ospite": "Udinese Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 18",
+      "data": "2027-01-06",
+      "ora": "",
+      "casa": "Genoa CFC",
+      "ospite": "AC Monza",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 18",
+      "data": "2027-01-06",
+      "ora": "",
+      "casa": "Venezia FC",
+      "ospite": "AS Roma",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 18",
+      "data": "2027-01-06",
+      "ora": "",
+      "casa": "SSC Napoli",
+      "ospite": "Cagliari Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 18",
+      "data": "2027-01-06",
+      "ora": "",
+      "casa": "AC Milan",
+      "ospite": "ACF Fiorentina",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 18",
+      "data": "2027-01-06",
+      "ora": "",
+      "casa": "Juventus FC",
+      "ospite": "Torino FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 18",
+      "data": "2027-01-06",
+      "ora": "",
+      "casa": "Atalanta BC",
+      "ospite": "Como 1907",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 18",
+      "data": "2027-01-06",
+      "ora": "",
+      "casa": "SS Lazio",
+      "ospite": "FC Internazionale Milano",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 18",
+      "data": "2027-01-06",
+      "ora": "",
+      "casa": "US Lecce",
+      "ospite": "Parma Calcio 1913",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 19",
+      "data": "2027-01-10",
+      "ora": "",
+      "casa": "ACF Fiorentina",
+      "ospite": "US Lecce",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 19",
+      "data": "2027-01-10",
+      "ora": "",
+      "casa": "Udinese Calcio",
+      "ospite": "SSC Napoli",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 19",
+      "data": "2027-01-10",
+      "ora": "",
+      "casa": "Torino FC",
+      "ospite": "Atalanta BC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 19",
+      "data": "2027-01-10",
+      "ora": "",
+      "casa": "AC Monza",
+      "ospite": "Frosinone Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 19",
+      "data": "2027-01-10",
+      "ora": "",
+      "casa": "FC Internazionale Milano",
+      "ospite": "Juventus FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 19",
+      "data": "2027-01-10",
+      "ora": "",
+      "casa": "Parma Calcio 1913",
+      "ospite": "Venezia FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 19",
+      "data": "2027-01-10",
+      "ora": "",
+      "casa": "Bologna FC 1909",
+      "ospite": "Genoa CFC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 19",
+      "data": "2027-01-10",
+      "ora": "",
+      "casa": "Cagliari Calcio",
+      "ospite": "US Sassuolo Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 19",
+      "data": "2027-01-10",
+      "ora": "",
+      "casa": "Como 1907",
+      "ospite": "SS Lazio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 19",
+      "data": "2027-01-10",
+      "ora": "",
+      "casa": "AS Roma",
+      "ospite": "AC Milan",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 20",
+      "data": "2027-01-17",
+      "ora": "",
+      "casa": "AC Milan",
+      "ospite": "Torino FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 20",
+      "data": "2027-01-17",
+      "ora": "",
+      "casa": "Parma Calcio 1913",
+      "ospite": "FC Internazionale Milano",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 20",
+      "data": "2027-01-17",
+      "ora": "",
+      "casa": "Juventus FC",
+      "ospite": "Genoa CFC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 20",
+      "data": "2027-01-17",
+      "ora": "",
+      "casa": "US Lecce",
+      "ospite": "Udinese Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 20",
+      "data": "2027-01-17",
+      "ora": "",
+      "casa": "Cagliari Calcio",
+      "ospite": "Como 1907",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 20",
+      "data": "2027-01-17",
+      "ora": "",
+      "casa": "US Sassuolo Calcio",
+      "ospite": "AC Monza",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 20",
+      "data": "2027-01-17",
+      "ora": "",
+      "casa": "SSC Napoli",
+      "ospite": "ACF Fiorentina",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 20",
+      "data": "2027-01-17",
+      "ora": "",
+      "casa": "SS Lazio",
+      "ospite": "Bologna FC 1909",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 20",
+      "data": "2027-01-17",
+      "ora": "",
+      "casa": "Venezia FC",
+      "ospite": "Frosinone Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 20",
+      "data": "2027-01-17",
+      "ora": "",
+      "casa": "Atalanta BC",
+      "ospite": "AS Roma",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 21",
+      "data": "2027-01-24",
+      "ora": "",
+      "casa": "US Lecce",
+      "ospite": "Torino FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 21",
+      "data": "2027-01-24",
+      "ora": "",
+      "casa": "Juventus FC",
+      "ospite": "Cagliari Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 21",
+      "data": "2027-01-24",
+      "ora": "",
+      "casa": "FC Internazionale Milano",
+      "ospite": "Venezia FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 21",
+      "data": "2027-01-24",
+      "ora": "",
+      "casa": "ACF Fiorentina",
+      "ospite": "US Sassuolo Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 21",
+      "data": "2027-01-24",
+      "ora": "",
+      "casa": "Frosinone Calcio",
+      "ospite": "AC Milan",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 21",
+      "data": "2027-01-24",
+      "ora": "",
+      "casa": "AS Roma",
+      "ospite": "Udinese Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 21",
+      "data": "2027-01-24",
+      "ora": "",
+      "casa": "Bologna FC 1909",
+      "ospite": "Atalanta BC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 21",
+      "data": "2027-01-24",
+      "ora": "",
+      "casa": "Genoa CFC",
+      "ospite": "Parma Calcio 1913",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 21",
+      "data": "2027-01-24",
+      "ora": "",
+      "casa": "Como 1907",
+      "ospite": "SSC Napoli",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 21",
+      "data": "2027-01-24",
+      "ora": "",
+      "casa": "AC Monza",
+      "ospite": "SS Lazio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 22",
+      "data": "2027-01-31",
+      "ora": "",
+      "casa": "AC Milan",
+      "ospite": "Juventus FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 22",
+      "data": "2027-01-31",
+      "ora": "",
+      "casa": "AC Monza",
+      "ospite": "AS Roma",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 22",
+      "data": "2027-01-31",
+      "ora": "",
+      "casa": "Torino FC",
+      "ospite": "Frosinone Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 22",
+      "data": "2027-01-31",
+      "ora": "",
+      "casa": "Udinese Calcio",
+      "ospite": "Bologna FC 1909",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 22",
+      "data": "2027-01-31",
+      "ora": "",
+      "casa": "US Sassuolo Calcio",
+      "ospite": "Como 1907",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 22",
+      "data": "2027-01-31",
+      "ora": "",
+      "casa": "Genoa CFC",
+      "ospite": "US Lecce",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 22",
+      "data": "2027-01-31",
+      "ora": "",
+      "casa": "Cagliari Calcio",
+      "ospite": "Parma Calcio 1913",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 22",
+      "data": "2027-01-31",
+      "ora": "",
+      "casa": "Atalanta BC",
+      "ospite": "ACF Fiorentina",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 22",
+      "data": "2027-01-31",
+      "ora": "",
+      "casa": "SS Lazio",
+      "ospite": "Venezia FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 22",
+      "data": "2027-01-31",
+      "ora": "",
+      "casa": "SSC Napoli",
+      "ospite": "FC Internazionale Milano",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 23",
+      "data": "2027-02-07",
+      "ora": "",
+      "casa": "Juventus FC",
+      "ospite": "US Sassuolo Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 23",
+      "data": "2027-02-07",
+      "ora": "",
+      "casa": "FC Internazionale Milano",
+      "ospite": "Cagliari Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 23",
+      "data": "2027-02-07",
+      "ora": "",
+      "casa": "Como 1907",
+      "ospite": "AC Monza",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 23",
+      "data": "2027-02-07",
+      "ora": "",
+      "casa": "US Lecce",
+      "ospite": "SSC Napoli",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 23",
+      "data": "2027-02-07",
+      "ora": "",
+      "casa": "Venezia FC",
+      "ospite": "Genoa CFC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 23",
+      "data": "2027-02-07",
+      "ora": "",
+      "casa": "AS Roma",
+      "ospite": "Torino FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 23",
+      "data": "2027-02-07",
+      "ora": "",
+      "casa": "Atalanta BC",
+      "ospite": "SS Lazio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 23",
+      "data": "2027-02-07",
+      "ora": "",
+      "casa": "Parma Calcio 1913",
+      "ospite": "Frosinone Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 23",
+      "data": "2027-02-07",
+      "ora": "",
+      "casa": "Bologna FC 1909",
+      "ospite": "AC Milan",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 23",
+      "data": "2027-02-07",
+      "ora": "",
+      "casa": "ACF Fiorentina",
+      "ospite": "Udinese Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 24",
+      "data": "2027-02-14",
+      "ora": "",
+      "casa": "SSC Napoli",
+      "ospite": "Juventus FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 24",
+      "data": "2027-02-14",
+      "ora": "",
+      "casa": "AC Monza",
+      "ospite": "US Lecce",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 24",
+      "data": "2027-02-14",
+      "ora": "",
+      "casa": "Torino FC",
+      "ospite": "US Sassuolo Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 24",
+      "data": "2027-02-14",
+      "ora": "",
+      "casa": "Frosinone Calcio",
+      "ospite": "ACF Fiorentina",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 24",
+      "data": "2027-02-14",
+      "ora": "",
+      "casa": "Bologna FC 1909",
+      "ospite": "Como 1907",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 24",
+      "data": "2027-02-14",
+      "ora": "",
+      "casa": "AS Roma",
+      "ospite": "Parma Calcio 1913",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 24",
+      "data": "2027-02-14",
+      "ora": "",
+      "casa": "Udinese Calcio",
+      "ospite": "Venezia FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 24",
+      "data": "2027-02-14",
+      "ora": "",
+      "casa": "Genoa CFC",
+      "ospite": "Atalanta BC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 24",
+      "data": "2027-02-14",
+      "ora": "",
+      "casa": "Cagliari Calcio",
+      "ospite": "SS Lazio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 24",
+      "data": "2027-02-14",
+      "ora": "",
+      "casa": "FC Internazionale Milano",
+      "ospite": "AC Milan",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 25",
+      "data": "2027-02-21",
+      "ora": "",
+      "casa": "Como 1907",
+      "ospite": "Torino FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 25",
+      "data": "2027-02-21",
+      "ora": "",
+      "casa": "Atalanta BC",
+      "ospite": "AC Monza",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 25",
+      "data": "2027-02-21",
+      "ora": "",
+      "casa": "Udinese Calcio",
+      "ospite": "Parma Calcio 1913",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 25",
+      "data": "2027-02-21",
+      "ora": "",
+      "casa": "Juventus FC",
+      "ospite": "Bologna FC 1909",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 25",
+      "data": "2027-02-21",
+      "ora": "",
+      "casa": "ACF Fiorentina",
+      "ospite": "FC Internazionale Milano",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 25",
+      "data": "2027-02-21",
+      "ora": "",
+      "casa": "US Sassuolo Calcio",
+      "ospite": "AS Roma",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 25",
+      "data": "2027-02-21",
+      "ora": "",
+      "casa": "AC Milan",
+      "ospite": "Genoa CFC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 25",
+      "data": "2027-02-21",
+      "ora": "",
+      "casa": "Venezia FC",
+      "ospite": "Cagliari Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 25",
+      "data": "2027-02-21",
+      "ora": "",
+      "casa": "US Lecce",
+      "ospite": "Frosinone Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 25",
+      "data": "2027-02-21",
+      "ora": "",
+      "casa": "SS Lazio",
+      "ospite": "SSC Napoli",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 26",
+      "data": "2027-02-28",
+      "ora": "",
+      "casa": "FC Internazionale Milano",
+      "ospite": "Atalanta BC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 26",
+      "data": "2027-02-28",
+      "ora": "",
+      "casa": "Cagliari Calcio",
+      "ospite": "Udinese Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 26",
+      "data": "2027-02-28",
+      "ora": "",
+      "casa": "Parma Calcio 1913",
+      "ospite": "US Sassuolo Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 26",
+      "data": "2027-02-28",
+      "ora": "",
+      "casa": "Genoa CFC",
+      "ospite": "SS Lazio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 26",
+      "data": "2027-02-28",
+      "ora": "",
+      "casa": "AS Roma",
+      "ospite": "Venezia FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 26",
+      "data": "2027-02-28",
+      "ora": "",
+      "casa": "Como 1907",
+      "ospite": "AC Milan",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 26",
+      "data": "2027-02-28",
+      "ora": "",
+      "casa": "Torino FC",
+      "ospite": "ACF Fiorentina",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 26",
+      "data": "2027-02-28",
+      "ora": "",
+      "casa": "Bologna FC 1909",
+      "ospite": "US Lecce",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 26",
+      "data": "2027-02-28",
+      "ora": "",
+      "casa": "AC Monza",
+      "ospite": "Juventus FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 26",
+      "data": "2027-02-28",
+      "ora": "",
+      "casa": "Frosinone Calcio",
+      "ospite": "SSC Napoli",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 27",
+      "data": "2027-03-07",
+      "ora": "",
+      "casa": "Udinese Calcio",
+      "ospite": "FC Internazionale Milano",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 27",
+      "data": "2027-03-07",
+      "ora": "",
+      "casa": "Atalanta BC",
+      "ospite": "Torino FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 27",
+      "data": "2027-03-07",
+      "ora": "",
+      "casa": "SSC Napoli",
+      "ospite": "Parma Calcio 1913",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 27",
+      "data": "2027-03-07",
+      "ora": "",
+      "casa": "US Lecce",
+      "ospite": "Como 1907",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 27",
+      "data": "2027-03-07",
+      "ora": "",
+      "casa": "SS Lazio",
+      "ospite": "Frosinone Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 27",
+      "data": "2027-03-07",
+      "ora": "",
+      "casa": "US Sassuolo Calcio",
+      "ospite": "Bologna FC 1909",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 27",
+      "data": "2027-03-07",
+      "ora": "",
+      "casa": "AC Monza",
+      "ospite": "Genoa CFC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 27",
+      "data": "2027-03-07",
+      "ora": "",
+      "casa": "ACF Fiorentina",
+      "ospite": "Venezia FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 27",
+      "data": "2027-03-07",
+      "ora": "",
+      "casa": "AC Milan",
+      "ospite": "Cagliari Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 27",
+      "data": "2027-03-07",
+      "ora": "",
+      "casa": "Juventus FC",
+      "ospite": "AS Roma",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 28",
+      "data": "2027-03-14",
+      "ora": "",
+      "casa": "Bologna FC 1909",
+      "ospite": "SSC Napoli",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 28",
+      "data": "2027-03-14",
+      "ora": "",
+      "casa": "Cagliari Calcio",
+      "ospite": "ACF Fiorentina",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 28",
+      "data": "2027-03-14",
+      "ora": "",
+      "casa": "AC Milan",
+      "ospite": "US Sassuolo Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 28",
+      "data": "2027-03-14",
+      "ora": "",
+      "casa": "Genoa CFC",
+      "ospite": "AS Roma",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 28",
+      "data": "2027-03-14",
+      "ora": "",
+      "casa": "Parma Calcio 1913",
+      "ospite": "US Lecce",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 28",
+      "data": "2027-03-14",
+      "ora": "",
+      "casa": "Torino FC",
+      "ospite": "FC Internazionale Milano",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 28",
+      "data": "2027-03-14",
+      "ora": "",
+      "casa": "Frosinone Calcio",
+      "ospite": "AC Monza",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 28",
+      "data": "2027-03-14",
+      "ora": "",
+      "casa": "Como 1907",
+      "ospite": "Udinese Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 28",
+      "data": "2027-03-14",
+      "ora": "",
+      "casa": "SS Lazio",
+      "ospite": "Juventus FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 28",
+      "data": "2027-03-14",
+      "ora": "",
+      "casa": "Venezia FC",
+      "ospite": "Atalanta BC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 29",
+      "data": "2027-03-21",
+      "ora": "",
+      "casa": "SSC Napoli",
+      "ospite": "Venezia FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 29",
+      "data": "2027-03-21",
+      "ora": "",
+      "casa": "Udinese Calcio",
+      "ospite": "Torino FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 29",
+      "data": "2027-03-21",
+      "ora": "",
+      "casa": "Juventus FC",
+      "ospite": "Como 1907",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 29",
+      "data": "2027-03-21",
+      "ora": "",
+      "casa": "ACF Fiorentina",
+      "ospite": "Genoa CFC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 29",
+      "data": "2027-03-21",
+      "ora": "",
+      "casa": "Parma Calcio 1913",
+      "ospite": "SS Lazio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 29",
+      "data": "2027-03-21",
+      "ora": "",
+      "casa": "US Sassuolo Calcio",
+      "ospite": "Cagliari Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 29",
+      "data": "2027-03-21",
+      "ora": "",
+      "casa": "AC Monza",
+      "ospite": "Bologna FC 1909",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 29",
+      "data": "2027-03-21",
+      "ora": "",
+      "casa": "FC Internazionale Milano",
+      "ospite": "Frosinone Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 29",
+      "data": "2027-03-21",
+      "ora": "",
+      "casa": "AS Roma",
+      "ospite": "US Lecce",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 29",
+      "data": "2027-03-21",
+      "ora": "",
+      "casa": "Atalanta BC",
+      "ospite": "AC Milan",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 30",
+      "data": "2027-04-04",
+      "ora": "",
+      "casa": "US Lecce",
+      "ospite": "SS Lazio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 30",
+      "data": "2027-04-04",
+      "ora": "",
+      "casa": "Cagliari Calcio",
+      "ospite": "SSC Napoli",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 30",
+      "data": "2027-04-04",
+      "ora": "",
+      "casa": "Como 1907",
+      "ospite": "ACF Fiorentina",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 30",
+      "data": "2027-04-04",
+      "ora": "",
+      "casa": "US Sassuolo Calcio",
+      "ospite": "Atalanta BC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 30",
+      "data": "2027-04-04",
+      "ora": "",
+      "casa": "AS Roma",
+      "ospite": "Bologna FC 1909",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 30",
+      "data": "2027-04-04",
+      "ora": "",
+      "casa": "AC Milan",
+      "ospite": "AC Monza",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 30",
+      "data": "2027-04-04",
+      "ora": "",
+      "casa": "Genoa CFC",
+      "ospite": "FC Internazionale Milano",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 30",
+      "data": "2027-04-04",
+      "ora": "",
+      "casa": "Torino FC",
+      "ospite": "Juventus FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 30",
+      "data": "2027-04-04",
+      "ora": "",
+      "casa": "Venezia FC",
+      "ospite": "Parma Calcio 1913",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 30",
+      "data": "2027-04-04",
+      "ora": "",
+      "casa": "Frosinone Calcio",
+      "ospite": "Udinese Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 31",
+      "data": "2027-04-11",
+      "ora": "",
+      "casa": "Juventus FC",
+      "ospite": "US Lecce",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 31",
+      "data": "2027-04-11",
+      "ora": "",
+      "casa": "SSC Napoli",
+      "ospite": "US Sassuolo Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 31",
+      "data": "2027-04-11",
+      "ora": "",
+      "casa": "ACF Fiorentina",
+      "ospite": "AC Milan",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 31",
+      "data": "2027-04-11",
+      "ora": "",
+      "casa": "SS Lazio",
+      "ospite": "Torino FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 31",
+      "data": "2027-04-11",
+      "ora": "",
+      "casa": "Cagliari Calcio",
+      "ospite": "Atalanta BC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 31",
+      "data": "2027-04-11",
+      "ora": "",
+      "casa": "Parma Calcio 1913",
+      "ospite": "Como 1907",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 31",
+      "data": "2027-04-11",
+      "ora": "",
+      "casa": "Bologna FC 1909",
+      "ospite": "Venezia FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 31",
+      "data": "2027-04-11",
+      "ora": "",
+      "casa": "Frosinone Calcio",
+      "ospite": "Genoa CFC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 31",
+      "data": "2027-04-11",
+      "ora": "",
+      "casa": "FC Internazionale Milano",
+      "ospite": "AS Roma",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 31",
+      "data": "2027-04-11",
+      "ora": "",
+      "casa": "Udinese Calcio",
+      "ospite": "AC Monza",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 32",
+      "data": "2027-04-18",
+      "ora": "",
+      "casa": "AC Monza",
+      "ospite": "FC Internazionale Milano",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 32",
+      "data": "2027-04-18",
+      "ora": "",
+      "casa": "ACF Fiorentina",
+      "ospite": "Parma Calcio 1913",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 32",
+      "data": "2027-04-18",
+      "ora": "",
+      "casa": "AS Roma",
+      "ospite": "SS Lazio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 32",
+      "data": "2027-04-18",
+      "ora": "",
+      "casa": "Como 1907",
+      "ospite": "Frosinone Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 32",
+      "data": "2027-04-18",
+      "ora": "",
+      "casa": "US Sassuolo Calcio",
+      "ospite": "US Lecce",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 32",
+      "data": "2027-04-18",
+      "ora": "",
+      "casa": "Bologna FC 1909",
+      "ospite": "Cagliari Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 32",
+      "data": "2027-04-18",
+      "ora": "",
+      "casa": "Atalanta BC",
+      "ospite": "Udinese Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 32",
+      "data": "2027-04-18",
+      "ora": "",
+      "casa": "Venezia FC",
+      "ospite": "Juventus FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 32",
+      "data": "2027-04-18",
+      "ora": "",
+      "casa": "AC Milan",
+      "ospite": "SSC Napoli",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 32",
+      "data": "2027-04-18",
+      "ora": "",
+      "casa": "Torino FC",
+      "ospite": "Genoa CFC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 33",
+      "data": "2027-04-25",
+      "ora": "",
+      "casa": "Frosinone Calcio",
+      "ospite": "AS Roma",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 33",
+      "data": "2027-04-25",
+      "ora": "",
+      "casa": "Cagliari Calcio",
+      "ospite": "AC Monza",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 33",
+      "data": "2027-04-25",
+      "ora": "",
+      "casa": "SSC Napoli",
+      "ospite": "Udinese Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 33",
+      "data": "2027-04-25",
+      "ora": "",
+      "casa": "Parma Calcio 1913",
+      "ospite": "Atalanta BC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 33",
+      "data": "2027-04-25",
+      "ora": "",
+      "casa": "SS Lazio",
+      "ospite": "Como 1907",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 33",
+      "data": "2027-04-25",
+      "ora": "",
+      "casa": "Juventus FC",
+      "ospite": "ACF Fiorentina",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 33",
+      "data": "2027-04-25",
+      "ora": "",
+      "casa": "Genoa CFC",
+      "ospite": "US Sassuolo Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 33",
+      "data": "2027-04-25",
+      "ora": "",
+      "casa": "US Lecce",
+      "ospite": "AC Milan",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 33",
+      "data": "2027-04-25",
+      "ora": "",
+      "casa": "Venezia FC",
+      "ospite": "Torino FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 33",
+      "data": "2027-04-25",
+      "ora": "",
+      "casa": "FC Internazionale Milano",
+      "ospite": "Bologna FC 1909",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 34",
+      "data": "2027-05-02",
+      "ora": "",
+      "casa": "Atalanta BC",
+      "ospite": "Juventus FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 34",
+      "data": "2027-05-02",
+      "ora": "",
+      "casa": "Torino FC",
+      "ospite": "Parma Calcio 1913",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 34",
+      "data": "2027-05-02",
+      "ora": "",
+      "casa": "AC Milan",
+      "ospite": "SS Lazio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 34",
+      "data": "2027-05-02",
+      "ora": "",
+      "casa": "Udinese Calcio",
+      "ospite": "Genoa CFC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 34",
+      "data": "2027-05-02",
+      "ora": "",
+      "casa": "US Sassuolo Calcio",
+      "ospite": "Frosinone Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 34",
+      "data": "2027-05-02",
+      "ora": "",
+      "casa": "Bologna FC 1909",
+      "ospite": "ACF Fiorentina",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 34",
+      "data": "2027-05-02",
+      "ora": "",
+      "casa": "Como 1907",
+      "ospite": "FC Internazionale Milano",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 34",
+      "data": "2027-05-02",
+      "ora": "",
+      "casa": "AC Monza",
+      "ospite": "Venezia FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 34",
+      "data": "2027-05-02",
+      "ora": "",
+      "casa": "US Lecce",
+      "ospite": "Cagliari Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 34",
+      "data": "2027-05-02",
+      "ora": "",
+      "casa": "AS Roma",
+      "ospite": "SSC Napoli",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 35",
+      "data": "2027-05-09",
+      "ora": "",
+      "casa": "Parma Calcio 1913",
+      "ospite": "AC Milan",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 35",
+      "data": "2027-05-09",
+      "ora": "",
+      "casa": "Genoa CFC",
+      "ospite": "Cagliari Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 35",
+      "data": "2027-05-09",
+      "ora": "",
+      "casa": "SS Lazio",
+      "ospite": "US Sassuolo Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 35",
+      "data": "2027-05-09",
+      "ora": "",
+      "casa": "SSC Napoli",
+      "ospite": "AC Monza",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 35",
+      "data": "2027-05-09",
+      "ora": "",
+      "casa": "FC Internazionale Milano",
+      "ospite": "US Lecce",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 35",
+      "data": "2027-05-09",
+      "ora": "",
+      "casa": "Venezia FC",
+      "ospite": "Como 1907",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 35",
+      "data": "2027-05-09",
+      "ora": "",
+      "casa": "Udinese Calcio",
+      "ospite": "Juventus FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 35",
+      "data": "2027-05-09",
+      "ora": "",
+      "casa": "Torino FC",
+      "ospite": "Bologna FC 1909",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 35",
+      "data": "2027-05-09",
+      "ora": "",
+      "casa": "Frosinone Calcio",
+      "ospite": "Atalanta BC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 35",
+      "data": "2027-05-09",
+      "ora": "",
+      "casa": "ACF Fiorentina",
+      "ospite": "AS Roma",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 36",
+      "data": "2027-05-16",
+      "ora": "",
+      "casa": "SSC Napoli",
+      "ospite": "Genoa CFC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 36",
+      "data": "2027-05-16",
+      "ora": "",
+      "casa": "US Lecce",
+      "ospite": "ACF Fiorentina",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 36",
+      "data": "2027-05-16",
+      "ora": "",
+      "casa": "SS Lazio",
+      "ospite": "Udinese Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 36",
+      "data": "2027-05-16",
+      "ora": "",
+      "casa": "Bologna FC 1909",
+      "ospite": "Frosinone Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 36",
+      "data": "2027-05-16",
+      "ora": "",
+      "casa": "Como 1907",
+      "ospite": "Atalanta BC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 36",
+      "data": "2027-05-16",
+      "ora": "",
+      "casa": "Juventus FC",
+      "ospite": "FC Internazionale Milano",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 36",
+      "data": "2027-05-16",
+      "ora": "",
+      "casa": "US Sassuolo Calcio",
+      "ospite": "Venezia FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 36",
+      "data": "2027-05-16",
+      "ora": "",
+      "casa": "AC Monza",
+      "ospite": "Parma Calcio 1913",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 36",
+      "data": "2027-05-16",
+      "ora": "",
+      "casa": "AC Milan",
+      "ospite": "AS Roma",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 36",
+      "data": "2027-05-16",
+      "ora": "",
+      "casa": "Cagliari Calcio",
+      "ospite": "Torino FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 37",
+      "data": "2027-05-23",
+      "ora": "",
+      "casa": "AS Roma",
+      "ospite": "Como 1907",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 37",
+      "data": "2027-05-23",
+      "ora": "",
+      "casa": "Parma Calcio 1913",
+      "ospite": "Juventus FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 37",
+      "data": "2027-05-23",
+      "ora": "",
+      "casa": "Torino FC",
+      "ospite": "SSC Napoli",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 37",
+      "data": "2027-05-23",
+      "ora": "",
+      "casa": "Atalanta BC",
+      "ospite": "US Lecce",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 37",
+      "data": "2027-05-23",
+      "ora": "",
+      "casa": "FC Internazionale Milano",
+      "ospite": "SS Lazio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 37",
+      "data": "2027-05-23",
+      "ora": "",
+      "casa": "Udinese Calcio",
+      "ospite": "US Sassuolo Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 37",
+      "data": "2027-05-23",
+      "ora": "",
+      "casa": "Frosinone Calcio",
+      "ospite": "Cagliari Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 37",
+      "data": "2027-05-23",
+      "ora": "",
+      "casa": "ACF Fiorentina",
+      "ospite": "AC Monza",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 37",
+      "data": "2027-05-23",
+      "ora": "",
+      "casa": "Venezia FC",
+      "ospite": "AC Milan",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 37",
+      "data": "2027-05-23",
+      "ora": "",
+      "casa": "Genoa CFC",
+      "ospite": "Bologna FC 1909",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 38",
+      "data": "2027-05-30",
+      "ora": "",
+      "casa": "AC Milan",
+      "ospite": "Udinese Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 38",
+      "data": "2027-05-30",
+      "ora": "",
+      "casa": "Juventus FC",
+      "ospite": "Frosinone Calcio",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 38",
+      "data": "2027-05-30",
+      "ora": "",
+      "casa": "AC Monza",
+      "ospite": "Torino FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 38",
+      "data": "2027-05-30",
+      "ora": "",
+      "casa": "US Sassuolo Calcio",
+      "ospite": "FC Internazionale Milano",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 38",
+      "data": "2027-05-30",
+      "ora": "",
+      "casa": "Cagliari Calcio",
+      "ospite": "AS Roma",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 38",
+      "data": "2027-05-30",
+      "ora": "",
+      "casa": "SS Lazio",
+      "ospite": "ACF Fiorentina",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 38",
+      "data": "2027-05-30",
+      "ora": "",
+      "casa": "Como 1907",
+      "ospite": "Genoa CFC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 38",
+      "data": "2027-05-30",
+      "ora": "",
+      "casa": "SSC Napoli",
+      "ospite": "Atalanta BC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 38",
+      "data": "2027-05-30",
+      "ora": "",
+      "casa": "US Lecce",
+      "ospite": "Venezia FC",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    },
+    {
+      "campionato": "Italian Serie A 2026/27",
+      "giornata": "Matchday 38",
+      "data": "2027-05-30",
+      "ora": "",
+      "casa": "Bologna FC 1909",
+      "ospite": "Parma Calcio 1913",
+      "risultatoCasa": null,
+      "risultatoOspite": null
+    }
+  ]
+}
