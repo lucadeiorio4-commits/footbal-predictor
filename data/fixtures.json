@@ -1,7 +1,7 @@
 {
   "fonte": "OpenFootball + Fixture Download",
   "campionato": "Competizioni europee e Serie A",
-  "ultimoAggiornamento": "2026-10-16T12:50:31.695220+00:00",
+  "ultimoAggiornamento": "2026-10-16T18:45:12.389497+00:00",
   "numeroPartite": 776,
   "partite": [
     {
@@ -5431,8 +5431,8 @@
       "ora": "16:45",
       "casa": "Lyon",
       "ospite": "Crystal Palace",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 3,
+      "risultatoOspite": 2
     },
     {
       "campionato": "Europa League",
@@ -5441,8 +5441,8 @@
       "ora": "16:45",
       "casa": "AZ Alkmaar",
       "ospite": "H. Beer-Sheva",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 2,
+      "risultatoOspite": 1
     },
     {
       "campionato": "Europa League",
@@ -5451,8 +5451,8 @@
       "ora": "16:45",
       "casa": "Union SG",
       "ospite": "Real Sociedad",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 1,
+      "risultatoOspite": 1
     },
     {
       "campionato": "Europa League",
@@ -5461,8 +5461,8 @@
       "ora": "16:45",
       "casa": "Salzburg",
       "ospite": "Milan",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 0,
+      "risultatoOspite": 4
     },
     {
       "campionato": "Europa League",
@@ -5471,8 +5471,8 @@
       "ora": "16:45",
       "casa": "Sparta Praha",
       "ospite": "Lillestrøm",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 1,
+      "risultatoOspite": 1
     },
     {
       "campionato": "Europa League",
@@ -5481,8 +5481,8 @@
       "ora": "16:45",
       "casa": "Lech Poznan",
       "ospite": "Leverkusen",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 0,
+      "risultatoOspite": 4
     },
     {
       "campionato": "Europa League",
@@ -5491,8 +5491,8 @@
       "ora": "16:45",
       "casa": "Celje",
       "ospite": "Omonia",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 0,
+      "risultatoOspite": 3
     },
     {
       "campionato": "Europa League",
@@ -5501,8 +5501,8 @@
       "ora": "16:45",
       "casa": "Torreense",
       "ospite": "Sunderland",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 1,
+      "risultatoOspite": 2
     },
     {
       "campionato": "Europa League",
@@ -5511,8 +5511,8 @@
       "ora": "19:00",
       "casa": "Benfica",
       "ospite": "Celtic",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 4,
+      "risultatoOspite": 1
     },
     {
       "campionato": "Europa League",
@@ -5521,8 +5521,8 @@
       "ora": "19:00",
       "casa": "Marseille",
       "ospite": "Olympiacos",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 0,
+      "risultatoOspite": 1
     },
     {
       "campionato": "Europa League",
@@ -5531,8 +5531,8 @@
       "ora": "19:00",
       "casa": "Ferencváros",
       "ospite": "Viktoria Plzen",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 2,
+      "risultatoOspite": 1
     },
     {
       "campionato": "Europa League",
@@ -5541,8 +5541,8 @@
       "ora": "19:00",
       "casa": "GNK Dinamo",
       "ospite": "Anderlecht",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 1,
+      "risultatoOspite": 0
     },
     {
       "campionato": "Europa League",
@@ -5551,8 +5551,8 @@
       "ora": "19:00",
       "casa": "Rennes",
       "ospite": "OFI Crete",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 2,
+      "risultatoOspite": 1
     },
     {
       "campionato": "Europa League",
@@ -5561,8 +5561,8 @@
       "ora": "19:00",
       "casa": "Bournemouth",
       "ospite": "Sturm Graz",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 3,
+      "risultatoOspite": 0
     },
     {
       "campionato": "Europa League",
@@ -5571,8 +5571,8 @@
       "ora": "19:00",
       "casa": "Jagiellonia",
       "ospite": "Ararat-Armenia",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 3,
+      "risultatoOspite": 1
     },
     {
       "campionato": "Europa League",
@@ -5581,8 +5581,8 @@
       "ora": "19:00",
       "casa": "Celta",
       "ospite": "Juventus",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 1,
+      "risultatoOspite": 2
     },
     {
       "campionato": "Europa League",
@@ -5591,8 +5591,8 @@
       "ora": "19:00",
       "casa": "Hoffenheim",
       "ospite": "Besiktas",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 2,
+      "risultatoOspite": 3
     },
     {
       "campionato": "Europa League",
@@ -5601,8 +5601,8 @@
       "ora": "19:00",
       "casa": "N.E.C.",
       "ospite": "Levski Sofia",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 1,
+      "risultatoOspite": 1
     },
     {
       "campionato": "Europa League",
@@ -6691,8 +6691,8 @@
       "ora": "16:45",
       "casa": "Gent",
       "ospite": "Aarhus",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 1,
+      "risultatoOspite": 0
     },
     {
       "campionato": "Conference League",
@@ -6701,8 +6701,8 @@
       "ora": "16:45",
       "casa": "Panathinaikos",
       "ospite": "Borac",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 2,
+      "risultatoOspite": 1
     },
     {
       "campionato": "Conference League",
@@ -6711,8 +6711,8 @@
       "ora": "16:45",
       "casa": "Lugano",
       "ospite": "Crvena Zvezda",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 3,
+      "risultatoOspite": 2
     },
     {
       "campionato": "Conference League",
@@ -6721,8 +6721,8 @@
       "ora": "16:45",
       "casa": "KuPS Kuopio",
       "ospite": "Trabzonspor",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 2,
+      "risultatoOspite": 4
     },
     {
       "campionato": "Conference League",
@@ -6731,8 +6731,8 @@
       "ora": "16:45",
       "casa": "U. Craiova",
       "ospite": "Getafe",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 1,
+      "risultatoOspite": 1
     },
     {
       "campionato": "Conference League",
@@ -6741,8 +6741,8 @@
       "ora": "16:45",
       "casa": "Riga",
       "ospite": "Kairat Almaty",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 1,
+      "risultatoOspite": 1
     },
     {
       "campionato": "Conference League",
@@ -6751,8 +6751,8 @@
       "ora": "16:45",
       "casa": "Hajduk Split",
       "ospite": "Ajax",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 2,
+      "risultatoOspite": 1
     },
     {
       "campionato": "Conference League",
@@ -6761,8 +6761,8 @@
       "ora": "16:45",
       "casa": "CSKA Sofia",
       "ospite": "Monaco",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 1,
+      "risultatoOspite": 2
     },
     {
       "campionato": "Conference League",
@@ -6771,8 +6771,8 @@
       "ora": "16:45",
       "casa": "Mjällby",
       "ospite": "Inter Escaldes",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 2,
+      "risultatoOspite": 0
     },
     {
       "campionato": "Conference League",
@@ -6781,8 +6781,8 @@
       "ora": "16:45",
       "casa": "Egnatia",
       "ospite": "Midtjylland",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 1,
+      "risultatoOspite": 1
     },
     {
       "campionato": "Conference League",
@@ -6791,8 +6791,8 @@
       "ora": "19:00",
       "casa": "Atalanta",
       "ospite": "Pafos",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 3,
+      "risultatoOspite": 1
     },
     {
       "campionato": "Conference League",
@@ -6801,8 +6801,8 @@
       "ora": "19:00",
       "casa": "Freiburg",
       "ospite": "Jablonec",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 3,
+      "risultatoOspite": 2
     },
     {
       "campionato": "Conference League",
@@ -6811,8 +6811,8 @@
       "ora": "19:00",
       "casa": "Copenhagen",
       "ospite": "Braga",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 3,
+      "risultatoOspite": 0
     },
     {
       "campionato": "Conference League",
@@ -6821,8 +6821,8 @@
       "ora": "19:00",
       "casa": "Brighton",
       "ospite": "Kauno Žalgiris",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 4,
+      "risultatoOspite": 0
     },
     {
       "campionato": "Conference League",
@@ -6831,8 +6831,8 @@
       "ora": "19:00",
       "casa": "Twente",
       "ospite": "Thun",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 1,
+      "risultatoOspite": 0
     },
     {
       "campionato": "Conference League",
@@ -6841,8 +6841,8 @@
       "ora": "19:00",
       "casa": "Sint-Truidense",
       "ospite": "Iberia Tbilisi",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 2,
+      "risultatoOspite": 0
     },
     {
       "campionato": "Conference League",
@@ -6851,8 +6851,8 @@
       "ora": "19:00",
       "casa": "Brann",
       "ospite": "L. Red Imps",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 2,
+      "risultatoOspite": 1
     },
     {
       "campionato": "Conference League",
@@ -6861,8 +6861,8 @@
       "ora": "19:00",
       "casa": "Hearts",
       "ospite": "Nordsjælland",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 1,
+      "risultatoOspite": 1
     },
     {
       "campionato": "Conference League",
