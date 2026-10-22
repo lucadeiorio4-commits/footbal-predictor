@@ -1,7 +1,7 @@
 {
   "fonte": "OpenFootball + Fixture Download",
   "campionato": "Competizioni europee e Serie A",
-  "ultimoAggiornamento": "2026-10-22T06:50:04.418918+00:00",
+  "ultimoAggiornamento": "2026-10-22T12:50:13.985091+00:00",
   "numeroPartite": 776,
   "partite": [
     {
@@ -4261,8 +4261,8 @@
       "ora": "16:45",
       "casa": "Lille",
       "ospite": "Galatasaray",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 2,
+      "risultatoOspite": 4
     },
     {
       "campionato": "Champions League",
@@ -4271,8 +4271,8 @@
       "ora": "16:45",
       "casa": "Como",
       "ospite": "Man Utd",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 4,
+      "risultatoOspite": 1
     },
     {
       "campionato": "Champions League",
@@ -4281,8 +4281,8 @@
       "ora": "19:00",
       "casa": "Bayern München",
       "ospite": "Arsenal",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 2,
+      "risultatoOspite": 2
     },
     {
       "campionato": "Champions League",
@@ -4291,8 +4291,8 @@
       "ora": "19:00",
       "casa": "Real Madrid",
       "ospite": "Leipzig",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 4,
+      "risultatoOspite": 1
     },
     {
       "campionato": "Champions League",
@@ -4301,8 +4301,8 @@
       "ora": "19:00",
       "casa": "Inter",
       "ospite": "Shakhtar",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 1,
+      "risultatoOspite": 0
     },
     {
       "campionato": "Champions League",
@@ -4311,8 +4311,8 @@
       "ora": "19:00",
       "casa": "Sporting CP",
       "ospite": "LASK",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 2,
+      "risultatoOspite": 3
     },
     {
       "campionato": "Champions League",
@@ -4321,8 +4321,8 @@
       "ora": "19:00",
       "casa": "Aston Villa",
       "ospite": "Viking",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 3,
+      "risultatoOspite": 1
     },
     {
       "campionato": "Champions League",
@@ -4331,8 +4331,8 @@
       "ora": "19:00",
       "casa": "Club Brugge",
       "ospite": "Lens",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 3,
+      "risultatoOspite": 0
     },
     {
       "campionato": "Champions League",
@@ -4341,8 +4341,8 @@
       "ora": "19:00",
       "casa": "Real Betis",
       "ospite": "Feyenoord",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 1,
+      "risultatoOspite": 0
     },
     {
       "campionato": "Champions League",
