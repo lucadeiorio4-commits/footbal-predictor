@@ -1,7 +1,7 @@
 {
   "fonte": "OpenFootball + Fixture Download",
   "campionato": "Competizioni europee e Serie A",
-  "ultimoAggiornamento": "2026-11-04T07:22:15.841074+00:00",
+  "ultimoAggiornamento": "2026-11-04T13:10:38.062019+00:00",
   "numeroPartite": 776,
   "partite": [
     {
@@ -4351,8 +4351,8 @@
       "ora": "17:45",
       "casa": "Shakhtar",
       "ospite": "Sporting CP",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 0,
+      "risultatoOspite": 1
     },
     {
       "campionato": "Champions League",
@@ -4361,8 +4361,8 @@
       "ora": "17:45",
       "casa": "Galatasaray",
       "ospite": "Stuttgart",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 2,
+      "risultatoOspite": 0
     },
     {
       "campionato": "Champions League",
@@ -4371,8 +4371,8 @@
       "ora": "20:00",
       "casa": "Barcelona",
       "ospite": "Aston Villa",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 3,
+      "risultatoOspite": 0
     },
     {
       "campionato": "Champions League",
@@ -4381,8 +4381,8 @@
       "ora": "20:00",
       "casa": "Atleti",
       "ospite": "Bayern München",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 0,
+      "risultatoOspite": 2
     },
     {
       "campionato": "Champions League",
@@ -4391,8 +4391,8 @@
       "ora": "20:00",
       "casa": "Man Utd",
       "ospite": "Roma",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 3,
+      "risultatoOspite": 2
     },
     {
       "campionato": "Champions League",
@@ -4401,8 +4401,8 @@
       "ora": "20:00",
       "casa": "Feyenoord",
       "ospite": "Inter",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 0,
+      "risultatoOspite": 3
     },
     {
       "campionato": "Champions League",
@@ -4411,8 +4411,8 @@
       "ora": "20:00",
       "casa": "Bodø/Glimt",
       "ospite": "Lille",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 0,
+      "risultatoOspite": 0
     },
     {
       "campionato": "Champions League",
@@ -4421,8 +4421,8 @@
       "ora": "20:00",
       "casa": "Villarreal",
       "ospite": "Paris",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 0,
+      "risultatoOspite": 6
     },
     {
       "campionato": "Champions League",
@@ -4431,8 +4431,8 @@
       "ora": "20:00",
       "casa": "LASK",
       "ospite": "S. Bratislava",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 4,
+      "risultatoOspite": 0
     },
     {
       "campionato": "Champions League",
