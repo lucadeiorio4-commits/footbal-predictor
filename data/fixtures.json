@@ -1,7 +1,7 @@
 {
   "fonte": "OpenFootball + Fixture Download",
   "campionato": "Competizioni europee e Serie A",
-  "ultimoAggiornamento": "2026-11-05T07:25:11.678484+00:00",
+  "ultimoAggiornamento": "2026-11-05T13:17:00.880648+00:00",
   "numeroPartite": 776,
   "partite": [
     {
@@ -4441,8 +4441,8 @@
       "ora": "17:45",
       "casa": "Fenerbahçe",
       "ospite": "Liverpool",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 3,
+      "risultatoOspite": 2
     },
     {
       "campionato": "Champions League",
@@ -4451,8 +4451,8 @@
       "ora": "17:45",
       "casa": "AEK Athens",
       "ospite": "Real Madrid",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 2,
+      "risultatoOspite": 3
     },
     {
       "campionato": "Champions League",
@@ -4461,8 +4461,8 @@
       "ora": "20:00",
       "casa": "B. Dortmund",
       "ospite": "Real Betis",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 2,
+      "risultatoOspite": 1
     },
     {
       "campionato": "Champions League",
@@ -4471,8 +4471,8 @@
       "ora": "20:00",
       "casa": "Porto",
       "ospite": "Napoli",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 4,
+      "risultatoOspite": 1
     },
     {
       "campionato": "Champions League",
@@ -4481,8 +4481,8 @@
       "ora": "20:00",
       "casa": "PSV",
       "ospite": "Club Brugge",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 1,
+      "risultatoOspite": 2
     },
     {
       "campionato": "Champions League",
@@ -4491,8 +4491,8 @@
       "ora": "20:00",
       "casa": "Leipzig",
       "ospite": "Man City",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 2,
+      "risultatoOspite": 3
     },
     {
       "campionato": "Champions League",
@@ -4501,8 +4501,8 @@
       "ora": "20:00",
       "casa": "Slavia Praha",
       "ospite": "Arsenal",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 1,
+      "risultatoOspite": 2
     },
     {
       "campionato": "Champions League",
@@ -4511,8 +4511,8 @@
       "ora": "20:00",
       "casa": "Lens",
       "ospite": "Como",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 1,
+      "risultatoOspite": 9
     },
     {
       "campionato": "Champions League",
@@ -4521,8 +4521,8 @@
       "ora": "20:00",
       "casa": "Viking",
       "ospite": "Sabah",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 4,
+      "risultatoOspite": 1
     },
     {
       "campionato": "Champions League",
@@ -5791,8 +5791,8 @@
       "ora": "15:30",
       "casa": "Rennes",
       "ospite": "Olympiacos",
-      "risultatoCasa": null,
-      "risultatoOspite": null
+      "risultatoCasa": 0,
+      "risultatoOspite": 0
     },
     {
       "campionato": "Europa League",
